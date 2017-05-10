@@ -11,21 +11,16 @@ public class Main {
 		
 		//Nodes
 		FacNode n1 = new FacNode(true,2,2);
-		PopNode n2 = new PopNode(3,4,4);
-		FacNode n3 = new FacNode(true,3,5);
+		FacNode n2 = new FacNode(true,3,5);
+		PopNode n3 = new PopNode(2,1,1);
+		PopNode n4 = new PopNode(10,4,4);
+		
 		
 		//Adding Nodes
 		testGraph.addVertex(n1);
 		testGraph.addVertex(n2);
 		testGraph.addVertex(n3);
-		
-		//Adding Edges
-		DefaultWeightedEdge e1 = testGraph.addEdge(n1,n2);
-		DefaultWeightedEdge e2 = testGraph.addEdge(n2, n3);
-		
-		//Adding Edge Weights (Road Distance)
-		testGraph.setEdgeWeight(e1, 10);
-		testGraph.setEdgeWeight(e2,5);
+		testGraph.addVertex(n4);
 		
 		
 		System.out.println(FacilityAlgorithm.Solve(testGraph));
