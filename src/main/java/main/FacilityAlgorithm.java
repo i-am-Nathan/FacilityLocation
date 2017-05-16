@@ -21,19 +21,11 @@ public class FacilityAlgorithm {
 	 *              candidates) and population nodes (Where distances from facilities will be calcuated)
 	 * @return The facility node with the best score, solving the facility location problem.
 	 */
-	public Node Solve(SimpleWeightedGraph<Node, DefaultWeightedEdge> graph){
-		List<PopNode> popNodeList = new ArrayList<>();
-		List<FacNode> facNodeList = new ArrayList<>();
+	public FacNode Solve(List<FacNode> facNodeList, List<PopNode> popNodeList){
 		FacNode bestNode;
-		Double bestScore = 0.0;
+		Double bestScore = Double.MAX_VALUE;
 
-		//loop through all Facilities F what are open
-		// add
-		for (Node n:graph.vertexSet()) {
-			if(n instanceof PopNode)
-				popNodeList.add((PopNode)n);
-			else facNodeList.add((FacNode)n);
-		}
+		//Set current node
 		bestNode = facNodeList.get(0);
 
 		for (FacNode facNode:facNodeList) {
@@ -41,13 +33,13 @@ public class FacilityAlgorithm {
 			for (PopNode popNode:popNodeList) {
 				score+=calculateScore(popNode,facNode);
 			}
-			if(score > bestScore){
+			if(score < bestScore){
 				bestNode = facNode;
 				bestScore = score;
 			}
 		}
 		
-		return (Node)bestNode;
+		return bestNode;
 	}
 
 	private Double calculateScore(PopNode popNode, FacNode facNode){
@@ -56,6 +48,6 @@ public class FacilityAlgorithm {
 		Double distance = Math.sqrt(Math.pow((facNode.getX()-popNode.getX()), 2) +
 				Math.pow((facNode.getY()-popNode.getY()), 2));
 
-		return population/distance;
+		return population * distance;
 	}
 }

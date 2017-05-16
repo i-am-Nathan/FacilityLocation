@@ -1,5 +1,8 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
@@ -7,6 +10,8 @@ public class Main {
 	public static void main(String[] args){
 		
 		SimpleWeightedGraph<Node, DefaultWeightedEdge> testGraph = new SimpleWeightedGraph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		List<PopNode> popNodeList = new ArrayList<>();
+		List<FacNode> facNodeList = new ArrayList<>();
 		
 		//Nodes
 		FacNode n1 = new FacNode(true,2,2);
@@ -14,6 +19,10 @@ public class Main {
 		PopNode n3 = new PopNode(2,1,1);
 		PopNode n4 = new PopNode(10,4,4);
 		
+		facNodeList.add(n1);
+		facNodeList.add(n2);
+		popNodeList.add(n3);
+		popNodeList.add(n4);
 		
 		//Adding Nodes
 		testGraph.addVertex(n1);
@@ -22,7 +31,7 @@ public class Main {
 		testGraph.addVertex(n4);
 
 		FacilityAlgorithm fa = new FacilityAlgorithm();
-		Node bestNode = fa.Solve(testGraph);
+		Node bestNode = fa.Solve(facNodeList,popNodeList);
 		
 		System.out.println(bestNode.getX() + " " + bestNode.getY());
 	}
