@@ -1,7 +1,7 @@
 package main;
 
-import jgrapht.graph.DefaultWeightedEdge;
-import jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
 
 public class Main {
 	public static void main(String[] args){
