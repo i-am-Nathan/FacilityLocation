@@ -22,3 +22,16 @@ Constraint:
 Measure of performance: All 'client' nodes must be in a residential zone, compute the distance (u,s) minimise the sum of distance*p(u)
 
 First priority is to use linear programming methods to solve this problem
+
+Algorithm
+1) Initialize the facility locations and increase their capacity by a certain amount e.g. 20%
+2) Run an iterative allocation-location process
+      a) Assign demand locations to their closest unfulfilled facility
+      b) Recalculate each facility location as the cenroid of its service area using the results of stage a.
+      c) Repeat a) and b) until facility locations converge or the maximum interations is reaced.
+3) Swap those final locations determined in step 2 exhaustively amoung facilities and use the original capcity vales.
+      a) swap the facility locations amoung facilities
+      b) run the allocation-llocation iteration after each capacity swap
+      c) evaluate the result by their weight or their value from the population
+      d) repeat a and b until the facility locations are coupled with the  actual capacities in all possible ways
+4) Choose the final solution with the minimum distance to population weight among all recorded solutions     
