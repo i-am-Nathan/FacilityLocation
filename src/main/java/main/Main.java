@@ -34,6 +34,9 @@ public class Main {
 		Node bestNode = fa.Solve(facNodeList,popNodeList);
 		
 		System.out.println(bestNode.getX() + " " + bestNode.getY());
+
+//		Input i = new Input();
+//		org.gephi.graph.api.DirectedGraph graph = i.Import("300m.gml");
 	}
 }
 
