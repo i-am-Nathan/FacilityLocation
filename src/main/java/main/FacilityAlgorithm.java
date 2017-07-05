@@ -4,7 +4,10 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 public class FacilityAlgorithm {
 	/**
@@ -21,6 +24,9 @@ public class FacilityAlgorithm {
 	 *              candidates) and population nodes (Where distances from facilities will be calcuated)
 	 * @return The facility node with the best score, solving the facility location problem.
 	 */
+	
+
+	
 	public FacNode Solve(List<FacNode> facNodeList, List<PopNode> popNodeList){
 		FacNode bestNode;
 		Double bestScore = Double.MAX_VALUE;
@@ -42,6 +48,63 @@ public class FacilityAlgorithm {
 		return bestNode;
 	}
 
+	public List<FacNode> LocalSearch(List<FacNode> facNodeList, List<PopNode> popNodeList, int facNum){
+		List<FacNode> desiredFacLocations = new ArrayList<FacNode>();
+		
+		
+		if(facNum == 1){
+			desiredFacLocations.add(Solve(facNodeList, popNodeList));
+			return desiredFacLocations;
+		}
+
+		//=============GET INITIAL K========================
+		//Sort the facilities in order by euclidean distance
+		Collections.sort(facNodeList, new DistanceComparator());
+		
+		//get initial k facility nodes
+		desiredFacLocations.add(facNodeList.get(0));
+		desiredFacLocations.add(facNodeList.get(facNodeList.size()));
+		facNum -=2;
+		
+
+		//===================================================
+	
+		//Get initial score of the facilities
+		Double currentScore = calculateAccumulateScore(desiredFacLocations, popNodeList);
+		
+		//find swaps for each of them, after this loop the best score should be given
+		for(int i = 0; i < desiredFacLocations.size(); i++){
+			Double tempScore = 0.0;
+			FacNode swappedOutNode;
+			for(FacNode tempFac: facNodeList){
+				if(tempFac.getVacancy()==false){
+					swappedOutNode = desiredFacLocations.get(i);
+					desiredFacLocations.add(i,tempFac);
+					tempScore = calculateAccumulateScore(desiredFacLocations,popNodeList);
+					if (tempScore<currentScore){
+						currentScore = tempScore;
+					} else {
+						desiredFacLocations.add(i,swappedOutNode);
+					}
+				}
+			}
+		}
+
+		return desiredFacLocations;
+		
+	}
+	
+	private Double calculateAccumulateScore(List<FacNode> facLocations, List<PopNode> popNodeList){
+		Double currentScore = 0.0;
+		for(FacNode facNode : facLocations){
+			for (PopNode popNode:popNodeList) {
+				currentScore+=calculateScore(popNode,facNode);
+			}
+		}
+		return currentScore;
+	}
+	
+	
 	private Double calculateScore(PopNode popNode, FacNode facNode){
 		int population = popNode.getPopulation();
 
@@ -49,5 +112,28 @@ public class FacilityAlgorithm {
 				Math.pow((facNode.getY()-popNode.getY()), 2));
 
 		return population * distance;
+	}
+	
+}
+
+class DistanceComparator implements Comparator<FacNode>{
+
+	@Override
+	public int compare(FacNode fac1, FacNode fac2) {
+		return Utility.euclidDistance(fac1,fac2);
+	}
+
+	private int euclidDistance(FacNode fac1, FacNode fac2) {
+		Double distance = Math.sqrt(Math.pow(fac2.xCoord-fac1.xCoord,2) + Math.pow(fac2.yCoord - fac1.yCoord, 2));
+		return (int) Math.round(distance);
+	}
+
+	
+}
+
+class Utility{
+	static int euclidDistance(FacNode fac1, FacNode fac2) {
+		Double distance = Math.sqrt(Math.pow(fac2.xCoord-fac1.xCoord,2) + Math.pow(fac2.yCoord - fac1.yCoord, 2));
+		return (int) Math.round(distance);
 	}
 }
