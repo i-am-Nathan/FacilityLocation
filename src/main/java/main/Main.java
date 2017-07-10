@@ -35,8 +35,10 @@ public class Main {
 		
 		System.out.println(bestNode.getX() + " " + bestNode.getY());
 
-		//Input i = new Input();
-		//org.gephi.graph.api.DirectedGraph graph = i.Import("300m.gml");
+		
+		Input i = new Input();
+		org.gephi.graph.api.UndirectedGraph graph = i.Import("300m.gml");
+		
 		
 	}
 }
