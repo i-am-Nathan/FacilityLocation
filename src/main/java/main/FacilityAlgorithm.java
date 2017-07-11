@@ -17,8 +17,8 @@ public class FacilityAlgorithm {
 	 * 							  every population node. There are no competitive facilities.
 	 *
 	 * @author Juno Jin, Nathan Situ
-	 * @param graph The graph to solve the facility location problem on. Consists of facility nodes (facility placement
-	 *              candidates) and population nodes (Where distances from facilities will be calcuated)
+	 * @param facNodeList the list of facility nodes
+	 * @param popNodeList the list of population nodes
 	 * @return The facility node with the best score, solving the facility location problem.
 	 */
 	public FacNode Solve(List<FacNode> facNodeList, List<PopNode> popNodeList){
@@ -43,11 +43,11 @@ public class FacilityAlgorithm {
 	}
 
 	private Double calculateScore(PopNode popNode, FacNode facNode){
-		int population = popNode.getPopulation();
+		float populationScore = popNode.getPopulationScore();
 
 		Double distance = Math.sqrt(Math.pow((facNode.getX()-popNode.getX()), 2) +
 				Math.pow((facNode.getY()-popNode.getY()), 2));
 
-		return population * distance;
+		return populationScore * distance;
 	}
 }
