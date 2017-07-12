@@ -145,13 +145,14 @@ public class LocalSearch {
 		}
 		return currentScore;
 	}
-	
+
 	private static Double calculateScore(PopNode popNode, FacNode facNode){
-		float population = popNode.getPopulationScore();
+		float populationScore = popNode.getPopulationScore();
+
 
 		Double distance = Math.sqrt(Math.pow((facNode.getX()-popNode.getX()), 2) +
 				Math.pow((facNode.getY()-popNode.getY()), 2));
 
-		return population * distance;
+		return populationScore * distance;
 	}
 }
