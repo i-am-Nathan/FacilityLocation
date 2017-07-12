@@ -127,7 +127,7 @@ public class Input {
                 density = 200;
                 break;
             default:
-                density = 0;
+               	return 0;
         }
         return (area/density);
     }

@@ -30,8 +30,12 @@ public class LocalSearch {
 			desiredFacLocations.add(Solve(graph.getFacNodeList(), graph.getPopNodeList()));
 			return desiredFacLocations;
 		}else if(facCount==2){
+			graph.getFacNodeList().get(0).setVacancy(false);
+			graph.getFacNodeList().get(graph.getFacNodeList().size()-1).setVacancy(false);
+			
 			desiredFacLocations.add(graph.getFacNodeList().get(0));
 			desiredFacLocations.add(graph.getFacNodeList().get(graph.getFacNodeList().size()-1));
+
 			facCount -=2;
 		} else {
 			//Sort the facilities in order by euclidean distance
@@ -57,7 +61,8 @@ public class LocalSearch {
 			for(Integer distance: facNodeDistanceMap.keySet()){
 				if(endLoop){
 					if(distance == distanceFromBefore){
-						desiredFacLocations.add(facNodeDistanceMap.get(distance));
+						facNodeDistanceMap.get(distance).setVacancy(false);
+						desiredFacLocations.add(facNodeDistanceMap.get(distance));					
 						break;
 					}
 					else {
@@ -71,9 +76,11 @@ public class LocalSearch {
 					checker = decreasingChecker;
 					currentlySelectedKey = distance;
 				} else if(decreasingChecker > checker){
+					facNodeDistanceMap.get(currentlySelectedKey).setVacancy(false);
 					desiredFacLocations.add(facNodeDistanceMap.get(currentlySelectedKey));
 					distanceMultiplier++;
 					dividedDistance = distanceFromBefore*distanceMultiplier/facCount;
+					
 					if(dividedDistance == distanceFromBefore){
 						endLoop = true;
 					}
@@ -84,29 +91,36 @@ public class LocalSearch {
 				}
 			}
 		}
+		
 
 		//===================================================
 		
 		//Get initial score of the facilities
-		Double currentScore = calculateAccumulateScore(desiredFacLocations, graph.getPopNodeList());
-				
+		Double currentScore = calculateAccumulateScore(desiredFacLocations, graph.getPopNodeList(),Double.MAX_VALUE);
+
 		//find swaps for each of them, after this loop the best score should be given
+		FacNode swappedOutNode;
+		Double tempScore;
+		
 		for(int i = 0; i < desiredFacLocations.size(); i++){
-			Double tempScore = 0.0;
-			FacNode swappedOutNode;
+			tempScore = 0.0;
+			swappedOutNode = desiredFacLocations.get(i);
 			for(FacNode tempFac: graph.getFacNodeList()){
-				if(tempFac.getVacancy()==false){
-					swappedOutNode = desiredFacLocations.get(i);
-					desiredFacLocations.add(i,tempFac);
-					tempScore = calculateAccumulateScore(desiredFacLocations,graph.getPopNodeList());
+				if(tempFac.getVacancy()==true){
+					desiredFacLocations.set(i,tempFac);
+					tempScore = calculateAccumulateScore(desiredFacLocations,graph.getPopNodeList(),currentScore);
+					
+					//If the accumulated score is smaller replace it else swap it back to the original one.
 					if (tempScore<currentScore){
 						currentScore = tempScore;
-					} else {
-						desiredFacLocations.add(i,swappedOutNode);
-					}
+						swappedOutNode = tempFac;
+					} 
 				}
 			}
+			desiredFacLocations.set(i,swappedOutNode);
+			System.out.printf("Current Lowest Score: %f\n", currentScore);
 		}
+		System.out.println("ALGORITHM COMPLETE");
 		return desiredFacLocations;
 	}
 	
@@ -136,11 +150,14 @@ public class LocalSearch {
 		return (int) Math.round(distance);
 	}
 	
-	private static Double calculateAccumulateScore(List<FacNode> facLocations, List<PopNode> popNodeList){
+	private static Double calculateAccumulateScore(List<FacNode> facLocations, List<PopNode> popNodeList, Double bound){
 		Double currentScore = 0.0;
 		for(FacNode facNode : facLocations){
 			for (PopNode popNode:popNodeList) {
 				currentScore+=calculateScore(popNode,facNode);
+				if(currentScore > bound){
+					return Double.MAX_VALUE;
+				}
 			}
 		}
 		return currentScore;
@@ -148,7 +165,6 @@ public class LocalSearch {
 
 	private static Double calculateScore(PopNode popNode, FacNode facNode){
 		float populationScore = popNode.getPopulationScore();
-
 
 		Double distance = Math.sqrt(Math.pow((facNode.getX()-popNode.getX()), 2) +
 				Math.pow((facNode.getY()-popNode.getY()), 2));
