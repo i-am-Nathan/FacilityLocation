@@ -50,11 +50,11 @@ public class LocalSearch {
 				facNodeDistanceMap.put(Integer.valueOf(distanceFromBefore), graph.getFacNodeList().get(i));
 			}
 			
-			int dividedDistance = distanceFromBefore/facCount;
+			int distanceMultiplier = 0;
+			int dividedDistance = (distanceMultiplier*distanceFromBefore)/(facCount-1);
 	
 			int decreasingChecker = Integer.MAX_VALUE;
 			int checker = Integer.MAX_VALUE;
-			int distanceMultiplier = 1;
 			boolean endLoop = false;
 			Integer currentlySelectedKey = null;
 			
@@ -79,7 +79,7 @@ public class LocalSearch {
 					facNodeDistanceMap.get(currentlySelectedKey).setVacancy(false);
 					desiredFacLocations.add(facNodeDistanceMap.get(currentlySelectedKey));
 					distanceMultiplier++;
-					dividedDistance = distanceFromBefore*distanceMultiplier/facCount;
+					dividedDistance = distanceFromBefore*distanceMultiplier/(facCount-1);
 					
 					if(dividedDistance == distanceFromBefore){
 						endLoop = true;

@@ -37,7 +37,9 @@ public class Main {
 
 		Input i = new Input();
 		Input.NodeListHolder nlh = i.Import("300m.gml");
-		List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
+		for(int j = 0; j< 5; j++){
+			List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
+		}
 
 	}
 }
