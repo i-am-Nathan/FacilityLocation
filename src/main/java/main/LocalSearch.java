@@ -5,6 +5,8 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 
+import main.Input.NodeListHolder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,107 +19,86 @@ import org.gephi.graph.api.Node;
 
 public class LocalSearch {
 	@SuppressWarnings("unchecked")
-	public List<FacNode> Search(UndirectedGraph graph, int businessNum, int facCount){
-		ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-		pc.newProject();
-		
-		List<FacNode> facNodeList = new ArrayList<FacNode>();
-		List<PopNode> popNodeList = new ArrayList<PopNode>();
-		for(Node node : graph.getNodes()){
-			if(isBusiness(node,businessNum)){
-				facNodeList.add((FacNode) node);
-			} 
-			else if(isResidential(node)){
-				popNodeList.add((PopNode) node);
-			}
-		}
-		
-		GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
-		UndirectedGraph newGraph = graphModel.getUndirectedGraph();
-		newGraph.addAllNodes((Collection<? extends Node>) facNodeList);
-		newGraph.addAllNodes((Collection<? extends Node>) popNodeList);
+	public static List<FacNode> Search(NodeListHolder graph, int facCount){
+
 		
 		List<FacNode> desiredFacLocations = new ArrayList<FacNode>();
 		
-		if(facCount == 1){
-			desiredFacLocations.add(Solve(facNodeList, popNodeList));
-			return desiredFacLocations;
-		}
 		
-
 		//=============GET INITIAL K========================
-		//Sort the facilities in order by euclidean distance
-		Collections.sort(facNodeList, new DistanceComparator());
-		HashMap<Integer, FacNode> facNodeDistanceMap = new HashMap<Integer, FacNode>();
-		
-		facNodeDistanceMap.put(Integer.valueOf(0),facNodeList.get(0));
-		
-		int distanceFromBefore = 0;
-		for(int i = 1; i<facNodeList.size();i++){
-			distanceFromBefore += euclidDistance(facNodeList.get(i),facNodeList.get(i-1));
-			facNodeDistanceMap.put(Integer.valueOf(distanceFromBefore), facNodeList.get(i));
-		}
-		
-		int dividedDistance = distanceFromBefore/facCount;
-
-		int decreasingChecker = Integer.MAX_VALUE;
-		int checker = Integer.MAX_VALUE;
-		int distanceMultiplier = 1;
-		boolean endLoop = false;
-		Integer currentlySelectedKey = null;
-		
-		for(Integer distance: facNodeDistanceMap.keySet()){
-			if(endLoop){
-				if(distance == distanceFromBefore){
-					desiredFacLocations.add(facNodeDistanceMap.get(distance));
-					break;
-				}
-				else {
-					continue;
-				}
+		if(facCount == 1){
+			desiredFacLocations.add(Solve(graph.getFacNodeList(), graph.getPopNodeList()));
+			return desiredFacLocations;
+		}else if(facCount==2){
+			desiredFacLocations.add(graph.getFacNodeList().get(0));
+			desiredFacLocations.add(graph.getFacNodeList().get(graph.getFacNodeList().size()-1));
+			facCount -=2;
+		} else {
+			//Sort the facilities in order by euclidean distance
+			Collections.sort(graph.getFacNodeList(), new DistanceComparator());
+			HashMap<Integer, FacNode> facNodeDistanceMap = new HashMap<Integer, FacNode>();
+			
+			facNodeDistanceMap.put(Integer.valueOf(0),graph.getFacNodeList().get(0));
+			
+			int distanceFromBefore = 0;
+			for(int i = 1; i<graph.getFacNodeList().size();i++){
+				distanceFromBefore += euclidDistance(graph.getFacNodeList().get(i),graph.getFacNodeList().get(i-1));
+				facNodeDistanceMap.put(Integer.valueOf(distanceFromBefore), graph.getFacNodeList().get(i));
 			}
 			
-			//The checker makes sure it gets the facility node that is the closest to the divided value;
-			decreasingChecker = distance - dividedDistance;
-			if(decreasingChecker < checker){
-				checker = decreasingChecker;
-				currentlySelectedKey = distance;
-			} else if(decreasingChecker > checker){
-				desiredFacLocations.add(facNodeDistanceMap.get(currentlySelectedKey));
-				distanceMultiplier++;
-				dividedDistance = distanceFromBefore*distanceMultiplier/facCount;
-				if(dividedDistance == distanceFromBefore){
-					endLoop = true;
+			int dividedDistance = distanceFromBefore/facCount;
+	
+			int decreasingChecker = Integer.MAX_VALUE;
+			int checker = Integer.MAX_VALUE;
+			int distanceMultiplier = 1;
+			boolean endLoop = false;
+			Integer currentlySelectedKey = null;
+			
+			for(Integer distance: facNodeDistanceMap.keySet()){
+				if(endLoop){
+					if(distance == distanceFromBefore){
+						desiredFacLocations.add(facNodeDistanceMap.get(distance));
+						break;
+					}
+					else {
+						continue;
+					}
 				}
-				//update it so it does not skip this distance when it is updated
-				currentlySelectedKey = distance;
+				
+				//The checker makes sure it gets the facility node that is the closest to the divided value;
 				decreasingChecker = distance - dividedDistance;
-				checker = decreasingChecker;
+				if(decreasingChecker < checker){
+					checker = decreasingChecker;
+					currentlySelectedKey = distance;
+				} else if(decreasingChecker > checker){
+					desiredFacLocations.add(facNodeDistanceMap.get(currentlySelectedKey));
+					distanceMultiplier++;
+					dividedDistance = distanceFromBefore*distanceMultiplier/facCount;
+					if(dividedDistance == distanceFromBefore){
+						endLoop = true;
+					}
+					//update it so it does not skip this distance when it is updated
+					currentlySelectedKey = distance;
+					decreasingChecker = distance - dividedDistance;
+					checker = decreasingChecker;
+				}
 			}
-			
 		}
-		
-		
-		//get initial k facility nodes
-		desiredFacLocations.add(facNodeList.get(0));
-		desiredFacLocations.add(facNodeList.get(facNodeList.size()));
-		facCount -=2;
-		
 
 		//===================================================
 		
 		//Get initial score of the facilities
-		Double currentScore = calculateAccumulateScore(desiredFacLocations, popNodeList);
+		Double currentScore = calculateAccumulateScore(desiredFacLocations, graph.getPopNodeList());
 				
 		//find swaps for each of them, after this loop the best score should be given
 		for(int i = 0; i < desiredFacLocations.size(); i++){
 			Double tempScore = 0.0;
 			FacNode swappedOutNode;
-			for(FacNode tempFac: facNodeList){
+			for(FacNode tempFac: graph.getFacNodeList()){
 				if(tempFac.getVacancy()==false){
 					swappedOutNode = desiredFacLocations.get(i);
 					desiredFacLocations.add(i,tempFac);
-					tempScore = calculateAccumulateScore(desiredFacLocations,popNodeList);
+					tempScore = calculateAccumulateScore(desiredFacLocations,graph.getPopNodeList());
 					if (tempScore<currentScore){
 						currentScore = tempScore;
 					} else {
@@ -129,7 +110,7 @@ public class LocalSearch {
 		return desiredFacLocations;
 	}
 	
-	public FacNode Solve(List<FacNode> facNodeList, List<PopNode> popNodeList){
+	public static FacNode Solve(List<FacNode> facNodeList, List<PopNode> popNodeList){
 		FacNode bestNode;
 		Double bestScore = Double.MAX_VALUE;
 
@@ -150,12 +131,12 @@ public class LocalSearch {
 		return bestNode;
 	}
 	
-	private int euclidDistance(FacNode fac1, FacNode fac2) {
+	private static int euclidDistance(FacNode fac1, FacNode fac2) {
 		Double distance = Math.sqrt(Math.pow(fac2.xCoord-fac1.xCoord,2) + Math.pow(fac2.yCoord - fac1.yCoord, 2));
 		return (int) Math.round(distance);
 	}
 	
-	private Double calculateAccumulateScore(List<FacNode> facLocations, List<PopNode> popNodeList){
+	private static Double calculateAccumulateScore(List<FacNode> facLocations, List<PopNode> popNodeList){
 		Double currentScore = 0.0;
 		for(FacNode facNode : facLocations){
 			for (PopNode popNode:popNodeList) {
@@ -165,20 +146,12 @@ public class LocalSearch {
 		return currentScore;
 	}
 	
-	private Double calculateScore(PopNode popNode, FacNode facNode){
-		int population = popNode.getPopulation();
+	private static Double calculateScore(PopNode popNode, FacNode facNode){
+		float population = popNode.getPopulationScore();
 
 		Double distance = Math.sqrt(Math.pow((facNode.getX()-popNode.getX()), 2) +
 				Math.pow((facNode.getY()-popNode.getY()), 2));
 
 		return population * distance;
-	}
-	
-	private boolean isResidential(Node node){
-		return node.getLabel().toLowerCase().contains(("Residential").toLowerCase());
-	}
-
-	private boolean isBusiness(Node node, int businessNum) {
-		return node.getLabel().toLowerCase().contains(("Business " + businessNum).toLowerCase());
 	}
 }
