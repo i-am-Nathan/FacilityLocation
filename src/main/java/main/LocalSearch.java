@@ -166,12 +166,12 @@ public class LocalSearch {
 	}
 	
 	private Double calculateScore(PopNode popNode, FacNode facNode){
-		int population = popNode.getPopulation();
+		float populationScore = popNode.getPopulationScore();
 
 		Double distance = Math.sqrt(Math.pow((facNode.getX()-popNode.getX()), 2) +
 				Math.pow((facNode.getY()-popNode.getY()), 2));
 
-		return population * distance;
+		return populationScore * distance;
 	}
 	
 	private boolean isResidential(Node node){
