@@ -1,6 +1,7 @@
 package main;
 
 import org.gephi.graph.api.*;
+import org.gephi.graph.api.Node;
 import org.gephi.io.importer.api.Container;
 import org.gephi.io.importer.api.EdgeDirectionDefault;
 import org.gephi.io.importer.api.ImportController;
@@ -26,8 +27,7 @@ public class Input {
         workspace = pc.getCurrentWorkspace();
     }
 
-    public NodeListHolder Import(String fileName){
-        NodeListHolder nlh = new NodeListHolder();
+    public UndirectedGraph importGraph(String fileName){
         ImportController importController = Lookup.getDefault().lookup(ImportController.class);
         Container container;
 
@@ -44,14 +44,20 @@ public class Input {
         importController.process(container,new DefaultProcessor(), workspace);
 
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
-        DirectedGraph graph = graphModel.getDirectedGraph();
+        UndirectedGraph graph = graphModel.getUndirectedGraph();
         System.out.println("Nodes: " + graph.getNodeCount());
         System.out.println("Edges: " + graph.getEdgeCount());
+
+        return graph;
+    }
+
+    public NodeListHolder graphToNodeListHolder(UndirectedGraph graph){
+        NodeListHolder nlh = new NodeListHolder();
 
         List<PopNode> popNodeList = new ArrayList<>();
         List<FacNode> facNodeList = new ArrayList<>();
 
-        List<String> zones = new ArrayList<>();
+//        List<String> zones = new ArrayList<>();
         for (org.gephi.graph.api.Node n: graph.getNodes()) {
             String label = n.getLabel();
             String[] nodeLabels = label.split(";");
