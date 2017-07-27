@@ -35,3 +35,27 @@ Algorithm
       c) evaluate the result by their weight or their value from the population
       d) repeat a and b until the facility locations are coupled with the  actual capacities in all possible ways
 4) Choose the final solution with the minimum distance to population weight among all recorded solutions     
+
+We will be focusing on using Local Search with single swaps and Local search with multi-swaps.
+We plan on creating 2 different versions while using the algorithms. 1 using euclidean distance to measure the cost of each combination of facilities and the 2nd one will be using the network.
+
+The algorithm itself contains 2 phases:
+-	Finding the Initial K facilities
+-	Swapping or multi-swapping
+
+Euclidean Distance Version 1:
+-	Find initial K using Centrality and clustering
+-	Swap one facility at a time to find the best combination
+Euclidean Distance Version 2:
+-	Find initial K by finding furthest nodes apart to each other
+-	Swap one facility at a time to find the best combination
+Euclidean Distance Version 3:
+-	Find initial K by using Centrality and clustering
+-	Swap multiple p facilities at a time to find the best combination
+Euclidean Distance Version 4:
+-	Find initial K by finding the furthest nodes apart to each other
+-	Swap multiple p facilities at a time to find the best combination
+
+Using the network has the same steps however the edges will be used as the distance instead of euclidean distance.
+
+
