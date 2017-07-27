@@ -46,12 +46,15 @@ The algorithm itself contains 2 phases:
 Euclidean Distance Version 1:
 -	Find initial K using Centrality and clustering
 -	Swap one facility at a time to find the best combination
+
 Euclidean Distance Version 2:
 -	Find initial K by finding furthest nodes apart to each other
 -	Swap one facility at a time to find the best combination
+
 Euclidean Distance Version 3:
 -	Find initial K by using Centrality and clustering
 -	Swap multiple p facilities at a time to find the best combination
+
 Euclidean Distance Version 4:
 -	Find initial K by finding the furthest nodes apart to each other
 -	Swap multiple p facilities at a time to find the best combination
