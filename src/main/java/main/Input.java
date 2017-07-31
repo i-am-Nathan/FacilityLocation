@@ -1,7 +1,9 @@
 package main;
 
+import org.gephi.filters.api.FilterController;
+import org.gephi.filters.api.Query;
+import org.gephi.filters.plugin.attribute.AttributeEqualBuilder;
 import org.gephi.graph.api.*;
-import org.gephi.graph.api.Node;
 import org.gephi.io.importer.api.Container;
 import org.gephi.io.importer.api.EdgeDirectionDefault;
 import org.gephi.io.importer.api.ImportController;
@@ -45,10 +47,22 @@ public class Input {
 
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
         UndirectedGraph graph = graphModel.getUndirectedGraph();
-        System.out.println("Nodes: " + graph.getNodeCount());
-        System.out.println("Edges: " + graph.getEdgeCount());
 
         return graph;
+    }
+
+    public UndirectedGraph getZoneGraph(UndirectedGraph completeGraph, String zoneType){
+        Column col = completeGraph.getModel().getNodeTable().getColumn("Label");
+        FilterController filterController = Lookup.getDefault().lookup(FilterController.class);
+
+        AttributeEqualBuilder.EqualStringFilter equalStringFilter = new AttributeEqualBuilder.EqualStringFilter.Node(col);
+        equalStringFilter.init(completeGraph);
+        equalStringFilter.setUseRegex(true);
+        equalStringFilter.setPattern("^.*(" + zoneType + ").*$");
+        Query query = filterController.createQuery(equalStringFilter);
+        GraphView graphView = filterController.filter(query);
+
+        return completeGraph.getModel().getUndirectedGraph(graphView);
     }
 
     public NodeListHolder graphToNodeListHolder(UndirectedGraph graph){
