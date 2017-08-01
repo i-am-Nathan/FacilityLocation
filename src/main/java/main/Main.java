@@ -43,16 +43,6 @@ public class Main {
 		System.out.println("Nodes: " + popGraph.getNodeCount());
 		System.out.println("Edges: " + popGraph.getEdgeCount());
 
-		Output o = new Output();
-		List<org.gephi.graph.api.Node> nodeList = new ArrayList<>();
-		org.gephi.graph.api.Node[] nodeArray = graph.getNodes().toArray();
-		for(int index = 0; index < 5; index++){
-			int nodeIndex = new Random().nextInt(nodeArray.length-1);
-			nodeList.add(nodeArray[nodeIndex]);
-			System.out.println(nodeArray[nodeIndex].getLabel());
-		}
-		o.export(nodeList);
-
 //		for(int j = 0; j< 5; j++){
 //			List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
 //		}
