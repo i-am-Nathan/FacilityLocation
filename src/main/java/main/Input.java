@@ -1,5 +1,8 @@
 package main;
 
+import org.gephi.filters.api.FilterController;
+import org.gephi.filters.api.Query;
+import org.gephi.filters.plugin.attribute.AttributeEqualBuilder;
 import org.gephi.graph.api.*;
 import org.gephi.io.importer.api.Container;
 import org.gephi.io.importer.api.EdgeDirectionDefault;
@@ -26,28 +29,7 @@ public class Input {
         workspace = pc.getCurrentWorkspace();
     }
 
-    public Graph ImportGraph(String fileName){
-        ImportController importController = Lookup.getDefault().lookup(ImportController.class);
-        Container container;
-
-        try{
-            File file = new File(getClass().getResource(fileName).toURI());
-            container = importController.importFile(file);
-            container.getLoader().setEdgeDefault(EdgeDirectionDefault.UNDIRECTED);
-            container.getLoader().setAllowAutoNode(false);
-        } catch(Exception ex){
-            ex.printStackTrace();
-            return null;
-        }
-
-
-        GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
-        UndirectedGraph graph = graphModel.getUndirectedGraph();
-        return graph;
-    }
-    
-    public NodeListHolder Import(String fileName){
-        NodeListHolder nlh = new NodeListHolder();
+    public UndirectedGraph importGraph(String fileName){
         ImportController importController = Lookup.getDefault().lookup(ImportController.class);
         Container container;
 
@@ -65,13 +47,31 @@ public class Input {
 
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
         UndirectedGraph graph = graphModel.getUndirectedGraph();
-        System.out.println("Nodes: " + graph.getNodeCount());
-        System.out.println("Edges: " + graph.getEdgeCount());
+
+        return graph;
+    }
+
+    public UndirectedGraph getZoneGraph(UndirectedGraph completeGraph, String zoneType){
+        Column col = completeGraph.getModel().getNodeTable().getColumn("Label");
+        FilterController filterController = Lookup.getDefault().lookup(FilterController.class);
+
+        AttributeEqualBuilder.EqualStringFilter equalStringFilter = new AttributeEqualBuilder.EqualStringFilter.Node(col);
+        equalStringFilter.init(completeGraph);
+        equalStringFilter.setUseRegex(true);
+        equalStringFilter.setPattern("^.*(" + zoneType + ").*$");
+        Query query = filterController.createQuery(equalStringFilter);
+        GraphView graphView = filterController.filter(query);
+
+        return completeGraph.getModel().getUndirectedGraph(graphView);
+    }
+
+    public NodeListHolder graphToNodeListHolder(UndirectedGraph graph){
+        NodeListHolder nlh = new NodeListHolder();
 
         List<PopNode> popNodeList = new ArrayList<>();
         List<FacNode> facNodeList = new ArrayList<>();
 
-        List<String> zones = new ArrayList<>();
+//        List<String> zones = new ArrayList<>();
         for (org.gephi.graph.api.Node n: graph.getNodes()) {
             String label = n.getLabel();
             String[] nodeLabels = label.split(";");
