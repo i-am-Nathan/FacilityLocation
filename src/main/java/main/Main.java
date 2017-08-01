@@ -11,6 +11,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 public class Main {
 	public static void main(String[] args){
 		
+		
 		SimpleWeightedGraph<Node, DefaultWeightedEdge> testGraph = new SimpleWeightedGraph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		List<PopNode> popNodeList = new ArrayList<>();
 		List<FacNode> facNodeList = new ArrayList<>();
@@ -39,9 +40,12 @@ public class Main {
 		
 		Graph graph = i.ImportGraph("300m.gml");
 		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(3, graph);
+		Double weight = 0.0;
 		for(org.gephi.graph.api.Node node : foundLocations.keySet()){
 			System.out.println("THE CHOSEN NODES ARE : " + node.getLabel());
+			weight+=foundLocations.get(node);
 		}
+		System.out.println("ALGORITHM COMPLETE, TOTAL COST IS: " + weight);
 		
 		
 

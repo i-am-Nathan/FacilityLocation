@@ -38,8 +38,10 @@ public class ReverseGreedy {
 				String[] nodeLabels = node.getLabel().split(";");
 			
 				if (nodeLabels[1].startsWith("Residential")){
-	                float populationScore = CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5]));
-	                facilityWeight+=populationScore * distances.get(node);
+	                double populationScore = CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5]));
+	                if(!distances.get(node).isInfinite()){
+		                facilityWeight+=populationScore * distances.get(node);
+	                }
 				}
 				
 			}
