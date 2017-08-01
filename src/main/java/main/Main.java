@@ -36,12 +36,6 @@ public class Main {
 
 		Input i = new Input();
 		org.gephi.graph.api.UndirectedGraph graph = i.importGraph("300m.gml");
-		System.out.println("Nodes: " + graph.getNodeCount());
-		System.out.println("Edges: " + graph.getEdgeCount());
-
-		org.gephi.graph.api.UndirectedGraph popGraph = i.getZoneGraph(graph, "Business");
-		System.out.println("Nodes: " + popGraph.getNodeCount());
-		System.out.println("Edges: " + popGraph.getEdgeCount());
 
 //		for(int j = 0; j< 5; j++){
 //			List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);

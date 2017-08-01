@@ -30,11 +30,10 @@ public class Output {
 
             for (Node n:nodeList) {
                 String[] nodeData = n.getLabel().split( ";");
-                br = new BufferedReader(new FileReader("C:\\Users\\Juno\\Documents\\git\\FacilityLocation\\src\\main\\java\\main\\YX.csv"));
+                br = new BufferedReader(new FileReader("src\\main\\java\\main\\YX.csv"));
                 while ((line = br.readLine()) != null) {
                     if(!headerRecorded){
                         writer.append(line);
-                        System.out.println(line);
                         headerRecorded = true;
                         continue;
                     }
