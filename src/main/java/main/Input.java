@@ -26,6 +26,26 @@ public class Input {
         workspace = pc.getCurrentWorkspace();
     }
 
+    public Graph ImportGraph(String fileName){
+        ImportController importController = Lookup.getDefault().lookup(ImportController.class);
+        Container container;
+
+        try{
+            File file = new File(getClass().getResource(fileName).toURI());
+            container = importController.importFile(file);
+            container.getLoader().setEdgeDefault(EdgeDirectionDefault.UNDIRECTED);
+            container.getLoader().setAllowAutoNode(false);
+        } catch(Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+
+
+        GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
+        UndirectedGraph graph = graphModel.getUndirectedGraph();
+        return graph;
+    }
+    
     public NodeListHolder Import(String fileName){
         NodeListHolder nlh = new NodeListHolder();
         ImportController importController = Lookup.getDefault().lookup(ImportController.class);
@@ -44,7 +64,7 @@ public class Input {
         importController.process(container,new DefaultProcessor(), workspace);
 
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
-        DirectedGraph graph = graphModel.getDirectedGraph();
+        UndirectedGraph graph = graphModel.getUndirectedGraph();
         System.out.println("Nodes: " + graph.getNodeCount());
         System.out.println("Edges: " + graph.getEdgeCount());
 

@@ -1,8 +1,10 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.gephi.graph.api.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
@@ -30,16 +32,18 @@ public class Main {
 		testGraph.addVertex(n3);
 		testGraph.addVertex(n4);
 
-		FacilityAlgorithm fa = new FacilityAlgorithm();
-		Node bestNode = fa.Solve(facNodeList,popNodeList);
-
-		System.out.println(bestNode.getX() + " " + bestNode.getY());
-
 		Input i = new Input();
 		Input.NodeListHolder nlh = i.Import("300m.gml");
-		for(int j = 0; j< 5; j++){
-			List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
+	
+		List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
+		
+		Graph graph = i.ImportGraph("300m.gml");
+		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(3, graph);
+		for(org.gephi.graph.api.Node node : foundLocations.keySet()){
+			System.out.println("THE CHOSEN NODES ARE : " + node.getLabel());
 		}
+		
+		
 
 	}
 }
