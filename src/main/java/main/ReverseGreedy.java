@@ -16,15 +16,27 @@ public class ReverseGreedy {
 
 		List<AbstractShortestPathAlgorithm> distanceGraph = new ArrayList<AbstractShortestPathAlgorithm>();
 
+		//List of all the facility nodes
 		List<Node> facNodes = new ArrayList<Node>();
+		List<Node> resNodes = new ArrayList<Node>();
+		
 		
 		for(Node node : wholeGraph.getNodes()){
 			String label = node.getLabel();
 			String[] nodeLabels = label.split(";");
 			if(nodeLabels[1].startsWith("Business")){
 				facNodes.add(node);
+			} else if(nodeLabels[1].startsWith("Residential")){
+				resNodes.add(node);
 			}
 		}
+		
+		//Find closest facility that the residential nodes can get to
+		
+		for(Node node : resNodes){
+			DijkstraShortestPathAlgorithm dijkstraGraph = new DijkstraShortestPathAlgorithm(wholeGraph,node);
+		}
+		
 		HashMap<Node,Double> facWeights = new HashMap<Node,Double>();
 		
 		for(int i = 0; i<facNodes.size();i++){
