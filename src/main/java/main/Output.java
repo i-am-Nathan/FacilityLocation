@@ -8,7 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -26,7 +28,8 @@ public class Output {
         df.setRoundingMode(RoundingMode.DOWN);
 
         try {
-            writer = new FileWriter("export.csv");
+            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Timestamp(System.currentTimeMillis()));
+            writer = new FileWriter(timeStamp+".csv");
 
             for (Node n:nodeList) {
                 String[] nodeData = n.getLabel().split( ";");

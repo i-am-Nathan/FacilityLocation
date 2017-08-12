@@ -31,7 +31,8 @@ public class Utility {
 		return (int) Math.round(distance);
 	}
 
-	static List<Node> findInitialK(Graph graph, int k, float coverageThreshold, String centralityType){
+	static List<List<Node>> findInitialK(Graph graph, int k, float coverageThreshold, String centralityType){
+	    List<List<Node>> nodeLists = new ArrayList<>();
 	    List<org.gephi.graph.api.Node> kNodeList = new ArrayList<>();
 
 		FilterController filterController = Lookup.getDefault().lookup(FilterController.class);
@@ -78,6 +79,7 @@ public class Utility {
 
         PartitionBuilder.PartitionFilter partitionFilter = new PartitionBuilder.NodePartitionFilter(classColumn, appearanceModel);
         for(int classIndex = 0; classIndex < k; classIndex++) {
+            List<Node> communityNodeList = new ArrayList<Node>();
             partitionFilter.addPart(percentages[classIndex]);
             Query query1 = filterController.createQuery(partitionFilter);
             filterController.setSubQuery(query1, query);
@@ -105,14 +107,18 @@ public class Utility {
                     }
                 }
 
+                communityNodeList.add(node);
                 if((double)node.getAttribute(centralityColumn) > maxCentrality) maxCentralityNode = node;
             }
             maxCentrality = 0;
             kNodeList.add(maxCentralityNode);
+            nodeLists.add(communityNodeList);
             partitionFilter.removePart(percentages[classIndex]);
         }
 
-		return kNodeList;
+        nodeLists.add(kNodeList);
+
+		return nodeLists;
 
 	}
 
