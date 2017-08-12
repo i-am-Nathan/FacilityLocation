@@ -31,7 +31,7 @@ public class Utility {
 		return (int) Math.round(distance);
 	}
 
-	static List<Node> findInitialK(Graph graph, int k){
+	static List<Node> findInitialK(Graph graph, int k, float coverageThreshold, String centralityType){
 	    List<org.gephi.graph.api.Node> kNodeList = new ArrayList<>();
 
 		FilterController filterController = Lookup.getDefault().lookup(FilterController.class);
@@ -55,7 +55,7 @@ public class Utility {
         Column classColumn = null;
         Object[] percentages = null;
 
-		while(totalCoverage<75){
+		while(totalCoverage<coverageThreshold){
 		    totalCoverage = 0;
 			modularity.setResolution(resolution);
 			modularity.execute(cleanGraph);
@@ -74,7 +74,7 @@ public class Utility {
             System.out.println("Total coverage over " + k + " communities: " + totalCoverage + "%\n");
 		}
 
-		System.out.println("####Total coverage now over 60%!\n\n");
+		System.out.println("#### Total coverage now over "+coverageThreshold+"%!\n\n");
 
         PartitionBuilder.PartitionFilter partitionFilter = new PartitionBuilder.NodePartitionFilter(classColumn, appearanceModel);
         for(int classIndex = 0; classIndex < k; classIndex++) {
@@ -89,53 +89,26 @@ public class Utility {
 
             GraphDistance graphDistance = new GraphDistance();
             graphDistance.execute(communityGraph);
-            double betweenness = 0;
-            double maxBetweenness = 0;
-            org.gephi.graph.api.Node maxBetweennessNode = null;
-
-            double closeness = 0;
-            double maxCloseness = 0;
-            org.gephi.graph.api.Node maxClosenessNode = null;
-
-            double eigenvector = 0;
-            double maxEigenvector = 0;
-            org.gephi.graph.api.Node maxEigenvectorNode = null;
+            double maxCentrality = 0;
+            org.gephi.graph.api.Node maxCentralityNode = null;
 
             System.out.println("Nodes in community " + classIndex + ": " + communityGraph.getNodeCount());
             System.out.println("Edges in community " + classIndex + ": " + communityGraph.getEdgeCount());
 
-            Column betweennessColumn = null;
-            Column closenessColumn = null;
-            Column eigenvectorColumn = null;
+            Column centralityColumn = null;
 
             for(org.gephi.graph.api.Node node:communityGraph.getNodes()){
                 for(Column col: node.getAttributeColumns()){
-                    switch(col.getTitle()){
-                        case "Betweenness Centrality":
-                            betweennessColumn = col;
-                            break;
-                        case "Closeness Centrality":
-                            closenessColumn = col;
-                            break;
-                        case "Eigenvector Centrality":
-                            eigenvectorColumn = col;
-                            break;
-                        default:
-                            break;
+                    if(col.getTitle().equals(centralityType)){
+                        centralityColumn = col;
+                        break;
                     }
                 }
-                betweenness = (double)node.getAttribute(betweennessColumn); //9
-                closeness = (double)node.getAttribute(closenessColumn); //7
-                eigenvector = (double)node.getAttribute(eigenvectorColumn); //5
 
-                if(betweenness > maxBetweenness) maxBetweennessNode = node;
-                if(closeness > maxCloseness) maxClosenessNode = node;
-                if(eigenvector > maxEigenvector) maxEigenvectorNode = node;
+                if((double)node.getAttribute(centralityColumn) > maxCentrality) maxCentralityNode = node;
             }
-            maxBetweenness = 0;
-            maxCloseness = 0;
-            maxEigenvector = 0;
-            kNodeList.add(maxBetweennessNode);
+            maxCentrality = 0;
+            kNodeList.add(maxCentralityNode);
             partitionFilter.removePart(percentages[classIndex]);
         }
 
