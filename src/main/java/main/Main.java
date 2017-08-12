@@ -34,11 +34,11 @@ public class Main {
 		testGraph.addVertex(n4);
 
 		Input i = new Input();
-		Input.NodeListHolder nlh = i.Import("300m.gml");
+		Input.NodeListHolder nlh = i.Import("100m.gml");
 	
 		List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
 		
-		Graph graph = i.ImportGraph("300m.gml");
+		Graph graph = i.ImportGraph("100m.gml");
 		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(3, graph);
 		Double weight = 0.0;
 		for(org.gephi.graph.api.Node node : foundLocations.keySet()){
