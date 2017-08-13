@@ -6,6 +6,7 @@ import javafx.scene.web.WebView;
 import org.apache.xpath.operations.Mod;
 import org.gephi.appearance.api.*;
 import org.gephi.appearance.plugin.PartitionElementColorTransformer;
+import org.gephi.datalab.api.AttributeColumnsController;
 import org.gephi.filters.api.FilterController;
 import org.gephi.filters.api.Query;
 import org.gephi.filters.plugin.graph.GiantComponentBuilder;
@@ -47,6 +48,10 @@ public class Utility {
 
 		UndirectedGraph cleanGraph = graph.getModel().getUndirectedGraph(graphView);
 
+        AttributeColumnsController attributeColumnsController = Lookup.getDefault().lookup(AttributeColumnsController.class);
+        Table edgeTable = cleanGraph.getModel().getEdgeTable();
+        attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
+
 		Modularity modularity = new Modularity();
 		modularity.setUseWeight(true);
 		modularity.setRandom(true);
@@ -79,7 +84,7 @@ public class Utility {
 
         PartitionBuilder.PartitionFilter partitionFilter = new PartitionBuilder.NodePartitionFilter(classColumn, appearanceModel);
         for(int classIndex = 0; classIndex < k; classIndex++) {
-            List<Node> communityNodeList = new ArrayList<Node>();
+            List<Node> communityNodeList = new ArrayList<>();
             partitionFilter.addPart(percentages[classIndex]);
             Query query1 = filterController.createQuery(partitionFilter);
             filterController.setSubQuery(query1, query);
@@ -100,17 +105,20 @@ public class Utility {
             Column centralityColumn = null;
 
             for(org.gephi.graph.api.Node node:communityGraph.getNodes()){
+                communityNodeList.add(node);
+                if(!node.getLabel().contains("Business")) continue;
                 for(Column col: node.getAttributeColumns()){
                     if(col.getTitle().equals(centralityType)){
                         centralityColumn = col;
                         break;
                     }
                 }
-
-                communityNodeList.add(node);
-                if((double)node.getAttribute(centralityColumn) > maxCentrality) maxCentralityNode = node;
+                double nodeCentrality = (double)node.getAttribute(centralityColumn);
+                if(nodeCentrality > maxCentrality) {
+                    maxCentralityNode = node;
+                    maxCentrality = nodeCentrality;
+                }
             }
-            maxCentrality = 0;
             kNodeList.add(maxCentralityNode);
             nodeLists.add(communityNodeList);
             partitionFilter.removePart(percentages[classIndex]);
