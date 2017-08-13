@@ -19,14 +19,12 @@ public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
 	public static HashMap<Node,Double> Search(int facCount,Graph wholeGraph){
 
-		List<AbstractShortestPathAlgorithm> distanceGraph = new ArrayList<AbstractShortestPathAlgorithm>();
-
 		//List of all the facility nodes
 		HashMap<Node, Double> facNodes = new HashMap<Node,Double>();
 		List<Node> resNodes = new ArrayList<Node>();
 		
 		
-		//Insert nodes into facNodes and resNods list
+		//Insert nodes into facNodes and resNodes list, sort them out
 		for(Node node : wholeGraph.getNodes()){
 			String label = node.getLabel();
 			String[] nodeLabels = label.split(";");
@@ -69,44 +67,58 @@ public class ReverseGreedy {
 				closestFacToResNodes.put(node,connectedFacs);
 			} 
 		}
+
 		
 		
 		double lowestWeight = Double.MAX_VALUE;
 		double tempWeight = 0.0 ;
 		while(facNodes.size()!=facCount){
 			Node removeNode = null;
+			lowestWeight = Double.MAX_VALUE;
+			tempWeight = 0.0;
 			HashMap<Node,HashMap<Node,Double>> currentBestSet = null;
 			
-			//Loop through all the facNodes and remmo
+			//Loop through all the facNodes and remove one at a time and check the weight of that one
 			for(Node facNode:facNodes.keySet()){
-				HashMap<Node,HashMap<Node,Double>> tempFacToRes = null;
-				if(closestFacToResNodes!=null){
-					tempFacToRes = new HashMap<Node,HashMap<Node,Double>>(closestFacToResNodes);
-				} else{
-					continue;
+				if(closestFacToResNodes==null){
+					System.out.println("HOLD UP");
 				}
-				//Remove the currently selected facilities
+				
+				//For some reason these 2 does nont reset
+				HashMap<Node,HashMap<Node,Double>> tempFacToRes =  new HashMap<Node,HashMap<Node,Double>>();
+				tempFacToRes.clear();
+				for(Node node:closestFacToResNodes.keySet()){
+					tempFacToRes.put(node,closestFacToResNodes.get(node));
+				}
+
+				
+				//Remove the currently selected facilities on all residential nodes.
 				for(Node resNode:tempFacToRes.keySet()){
 					tempFacToRes.get(resNode).remove(facNode);
-
 				}
-
-
-			
+				
+				System.out.println(tempFacToRes.size());
 				//Calculate the weight of this set
 				tempWeight = CalculateWeight(tempFacToRes,lowestWeight);
 				if(tempWeight == -1.0){
 					continue;
 				}
 				else if(tempWeight < lowestWeight){
-					currentBestSet = new HashMap<Node,HashMap<Node,Double>>(tempFacToRes);
+					currentBestSet = new HashMap<Node,HashMap<Node,Double>>();
+					currentBestSet.clear();
+					for(Node node:tempFacToRes.keySet()){
+						currentBestSet.put(node, tempFacToRes.get(node));
+					}
 					lowestWeight = tempWeight;
 					removeNode = facNode;
+					System.out.println(lowestWeight);
 				}
 			}
 			
-			closestFacToResNodes = currentBestSet;
-			
+			closestFacToResNodes.clear();
+			for(Node node:currentBestSet.keySet()){
+				closestFacToResNodes.put(node, currentBestSet.get(node));
+			}
 			facNodes.remove(removeNode);
 			System.out.println(facNodes.size());
 			if(facNodes.size()==4){
@@ -137,12 +149,12 @@ public class ReverseGreedy {
 					double popScore = CalculatePopulationScore(nodeLabel[2],Float.valueOf(nodeLabel[5]));
 					
 					facWeight = facWeight + (map.get(facNode).doubleValue() * popScore);
-	
-					if(facWeight > lowestWeight){
+					break;
+				/*	if(facWeight > lowestWeight){
 						return -1.0;
 					} else {
 						break;
-					}
+					}*/
 				}			
 			}
 		}
