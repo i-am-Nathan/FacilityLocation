@@ -13,7 +13,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 public class Main {
 	public static void main(String[] args){
 		
-
+		
 		SimpleWeightedGraph<Node, DefaultWeightedEdge> testGraph = new SimpleWeightedGraph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		List<PopNode> popNodeList = new ArrayList<>();
 		List<FacNode> facNodeList = new ArrayList<>();
@@ -36,27 +36,20 @@ public class Main {
 		testGraph.addVertex(n4);
 
 		Input i = new Input();
-//		org.gephi.graph.api.UndirectedGraph graph = i.importGraph("300m.gml");
+		Input.NodeListHolder nlh = i.Import("100m.gml");
 
-//		for(int j = 0; j< 5; j++){
-//			List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
-//		}
-//		Input.NodeListHolder nlh = i.Import("300m.gml");
+		List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
 
-//		List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
-
-		UndirectedGraph graph = i.importGraph("300m.gml");
-		i.graphToNodeListHolder(graph);
-//
-//		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(3, graph);
-//		Double weight = 0.0;
-//		for(org.gephi.graph.api.Node node : foundLocations.keySet()){
-//			System.out.println("THE CHOSEN NODES ARE : " + node.getLabel());
-//			weight+=foundLocations.get(node);
-//		}
-//		System.out.println("ALGORITHM COMPLETE, TOTAL COST IS: " + weight);
-
-		Output output = new Output();
+		Graph graph = i.ImportGraph("100m.gml");
+		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(3, graph);
+		Double weight = 0.0;
+		for(org.gephi.graph.api.Node node : foundLocations.keySet()){
+			System.out.println("THE CHOSEN NODES ARE : " + node.getLabel());
+			weight+=foundLocations.get(node);
+		}
+		System.out.println("ALGORITHM COMPLETE, TOTAL COST IS: " + weight);
+		
+		
 
 		for (List<org.gephi.graph.api.Node> nodeList :Utility.findInitialK(graph, 3,75,"Eigenvector Centrality")) {
 			output.export(nodeList);
