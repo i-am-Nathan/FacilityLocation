@@ -80,15 +80,16 @@ public class ReverseGreedy {
 			
 			//Loop through all the facNodes and remove one at a time and check the weight of that one
 			for(Node facNode:facNodes.keySet()){
-				if(closestFacToResNodes==null){
-					System.out.println("HOLD UP");
-				}
 				
-				//For some reason these 2 does nont reset
+				//For some reason these 2 does not reset
 				HashMap<Node,HashMap<Node,Double>> tempFacToRes =  new HashMap<Node,HashMap<Node,Double>>();
 				tempFacToRes.clear();
 				for(Node node:closestFacToResNodes.keySet()){
-					tempFacToRes.put(node,closestFacToResNodes.get(node));
+					HashMap<Node,Double> tempFacNodes = new HashMap<Node,Double>();
+					for(Node tempNode : closestFacToResNodes.get(node).keySet()){
+						tempFacNodes.put(tempNode, closestFacToResNodes.get(node).get(tempNode));
+					}
+					tempFacToRes.put(node,tempFacNodes);
 				}
 
 				
@@ -97,7 +98,6 @@ public class ReverseGreedy {
 					tempFacToRes.get(resNode).remove(facNode);
 				}
 				
-				System.out.println(tempFacToRes.size());
 				//Calculate the weight of this set
 				tempWeight = CalculateWeight(tempFacToRes,lowestWeight);
 				if(tempWeight == -1.0){
@@ -111,7 +111,6 @@ public class ReverseGreedy {
 					}
 					lowestWeight = tempWeight;
 					removeNode = facNode;
-					System.out.println(lowestWeight);
 				}
 			}
 			
