@@ -36,11 +36,8 @@ public class Main {
 		testGraph.addVertex(n4);
 
 		Input i = new Input();
-		Input.NodeListHolder nlh = i.Import("100m.gml");
 
-		List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
-
-		Graph graph = i.ImportGraph("100m.gml");
+		Graph graph = i.importGraph("100m.gml");
 		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(3, graph);
 		Double weight = 0.0;
 		for(org.gephi.graph.api.Node node : foundLocations.keySet()){
@@ -49,7 +46,7 @@ public class Main {
 		}
 		System.out.println("ALGORITHM COMPLETE, TOTAL COST IS: " + weight);
 		
-		
+		Output output = new Output();
 
 		for (List<org.gephi.graph.api.Node> nodeList :Utility.findInitialK(graph, 3,75,"Eigenvector Centrality")) {
 			output.export(nodeList);
