@@ -19,7 +19,7 @@ public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
 	public static HashMap<Node,Double> Search(int facCount,Graph wholeGraph){
 
-		//List of all the facility nodes
+		//List of all the facility nodes and residential nodes
 		HashMap<Node, Double> facNodes = new HashMap<Node,Double>();
 		List<Node> resNodes = new ArrayList<Node>();
 		
@@ -69,19 +69,16 @@ public class ReverseGreedy {
 		}
 
 		
-		
 		double lowestWeight = Double.MAX_VALUE;
-		double tempWeight = 0.0 ;
+		double tempWeight = 0.0 ; 
 		while(facNodes.size()!=facCount){
 			Node removeNode = null;
-			lowestWeight = Double.MAX_VALUE;
-			tempWeight = 0.0;
 			HashMap<Node,HashMap<Node,Double>> currentBestSet = null;
-			
+			lowestWeight=Double.MAX_VALUE;
 			//Loop through all the facNodes and remove one at a time and check the weight of that one
 			for(Node facNode:facNodes.keySet()){
 				
-				//For some reason these 2 does not reset
+				//recreates the hashmap
 				HashMap<Node,HashMap<Node,Double>> tempFacToRes =  new HashMap<Node,HashMap<Node,Double>>();
 				tempFacToRes.clear();
 				for(Node node:closestFacToResNodes.keySet()){
@@ -103,7 +100,7 @@ public class ReverseGreedy {
 				if(tempWeight == -1.0){
 					continue;
 				}
-				else if(tempWeight < lowestWeight){
+				else if(tempWeight <= lowestWeight){
 					currentBestSet = new HashMap<Node,HashMap<Node,Double>>();
 					currentBestSet.clear();
 					for(Node node:tempFacToRes.keySet()){
@@ -119,11 +116,7 @@ public class ReverseGreedy {
 				closestFacToResNodes.put(node, currentBestSet.get(node));
 			}
 			facNodes.remove(removeNode);
-			System.out.println(facNodes.size());
-			if(facNodes.size()==4){
-				System.out.println("WAIT PLS");
-			}
-
+			System.out.println("CURRENT SIZE: " + facNodes.size());
 			System.out.println("NEW WEIGHT: " + lowestWeight);
 		
 		}
@@ -132,7 +125,6 @@ public class ReverseGreedy {
 	}
 
 	
-	//TODO this algorithm for adding facweight needs to be fixed, reverse the for loops
 	private static double CalculateWeight(HashMap<Node, HashMap<Node, Double>> closestFacToResNodes, Double lowestWeight) {
 		
 		double facWeight = 0.0;
@@ -148,43 +140,20 @@ public class ReverseGreedy {
 					double popScore = CalculatePopulationScore(nodeLabel[2],Float.valueOf(nodeLabel[5]));
 					
 					facWeight = facWeight + (map.get(facNode).doubleValue() * popScore);
-					break;
-				/*	if(facWeight > lowestWeight){
+					
+					if(facWeight > lowestWeight){
 						return -1.0;
 					} else {
 						break;
-					}*/
+					}
 				}			
 			}
-		}
-
-		if(facWeight==0.0){
-			return -1.0;
 		}
 		
 		return facWeight;
 	}
 
 
-
-	private static Node RGreed(HashMap<Node, Double> facWeights) {
-		double lowestWeight = Double.MAX_VALUE;
-		double currentWeight;
-		Node removeNode = null;
-		for(Node ignoredNode : facWeights.keySet()){
-			currentWeight = 0.0;
-			for(Node node : facWeights.keySet()){
-				if(node != ignoredNode){
-					currentWeight+=facWeights.get(node);
-				}
-				if(currentWeight < lowestWeight){
-					lowestWeight = currentWeight;
-					removeNode = ignoredNode;
-				}
-			}
-		}
-		return removeNode;
-	}
 
 
 	private static float CalculatePopulationScore(String zone, Float area) {
