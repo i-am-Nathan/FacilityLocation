@@ -6,34 +6,14 @@ import java.util.List;
 
 import org.apache.xalan.templates.OutputProperties;
 import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.Node;
 import org.gephi.graph.api.UndirectedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.openide.util.datatransfer.ExTransferable;
 
 public class Main {
 	public static void main(String[] args){
-		
-
-		SimpleWeightedGraph<Node, DefaultWeightedEdge> testGraph = new SimpleWeightedGraph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-		List<PopNode> popNodeList = new ArrayList<>();
-		List<FacNode> facNodeList = new ArrayList<>();
-		
-		//Nodes
-		FacNode n1 = new FacNode(true,2,2);
-		FacNode n2 = new FacNode(true,3,5);
-		PopNode n3 = new PopNode(2,1,1);
-		PopNode n4 = new PopNode(10,4,4);
-		
-		facNodeList.add(n1);
-		facNodeList.add(n2);
-		popNodeList.add(n3);
-		popNodeList.add(n4);
-		
-		//Adding Nodes
-		testGraph.addVertex(n1);
-		testGraph.addVertex(n2);
-		testGraph.addVertex(n3);
-		testGraph.addVertex(n4);
 
 		Input i = new Input();
 //		org.gephi.graph.api.UndirectedGraph graph = i.importGraph("300m.gml");
@@ -46,7 +26,6 @@ public class Main {
 //		List<FacNode> desiredFacLocations = LocalSearch.Search(nlh, 3);
 
 		UndirectedGraph graph = i.importGraph("300m.gml");
-		i.graphToNodeListHolder(graph);
 //
 //		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(3, graph);
 //		Double weight = 0.0;
@@ -57,14 +36,14 @@ public class Main {
 //		System.out.println("ALGORITHM COMPLETE, TOTAL COST IS: " + weight);
 
 		Output output = new Output();
+		SingleSwap ss = new SingleSwap();
 
-		for (List<org.gephi.graph.api.Node> nodeList :Utility.findInitialK(graph, 3,75,"Eigenvector Centrality")) {
-			output.export(nodeList);
-		}
+		List<Node> chosenFacilities = ss.Search(graph, 3);
+		output.export(chosenFacilities);
 	}
 }
 
-class Node {
+class MainNode {
 	protected float xCoord;
 	protected float yCoord;
 	
@@ -77,21 +56,21 @@ class Node {
 	}
 }
 
-class PopNode extends Node {
-	private float populationScore;
+class PopNode extends MainNode {
+	private double populationScore;
 	
-	public PopNode(float populationScore, float xCoord, float yCoord){
+	public PopNode(double populationScore, float xCoord, float yCoord){
 		this.populationScore = populationScore;
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
 	}
 	
-	public float getPopulationScore(){
+	public double getPopulationScore(){
 		return populationScore;
 	}
 }
 
-class FacNode extends Node {
+class FacNode extends MainNode {
 	private boolean isVacant;
 	
 	public FacNode(boolean isVacant, float xCoord, float yCoord){

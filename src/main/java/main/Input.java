@@ -76,7 +76,7 @@ public class Input {
             String label = n.getLabel();
             String[] nodeLabels = label.split(";");
             if (nodeLabels[1].startsWith("Residential")){
-                float populationScore = CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5]));
+                double populationScore = Utility.CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5]));
                 popNodeList.add(new PopNode(populationScore,n.x(),n.y()));
             } else if (nodeLabels[1].startsWith("Business")){
                 facNodeList.add(new FacNode(true, n.x(),n.y()));
@@ -105,50 +105,4 @@ public class Input {
         }
     }
 
-    public float CalculatePopulationScore(String zone, float area){
-        int density;
-        switch (zone) {
-            case "1":
-                density = 1200;
-                break;
-            case "2A1":
-                density = 5000;
-                break;
-            case "2A":
-                density = 800;
-                break;
-            case "2B":
-            case "3C":
-                density = 600;
-                break;
-            case "2C":
-                density = 350;
-                break;
-            case "3A":
-            case "4A":
-            case "4B":
-                density = 450;
-                break;
-            case "3B":
-                density = 500;
-                break;
-            case "5":
-                density = 350;
-                break;
-            case "6A":
-            case "6A1":
-            case "6B":
-            case "6B1":
-            case "6C":
-            case "6C1":
-                density = 150;
-                break;
-            case "7":
-                density = 200;
-                break;
-            default:
-               	return 0;
-        }
-        return (area/density);
-    }
 }

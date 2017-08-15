@@ -164,7 +164,7 @@ public class LocalSearch {
 	}
 
 	private static Double calculateScore(PopNode popNode, FacNode facNode){
-		float populationScore = popNode.getPopulationScore();
+		double populationScore = popNode.getPopulationScore();
 
 		Double distance = Math.sqrt(Math.pow((facNode.getX()-popNode.getX()), 2) +
 				Math.pow((facNode.getY()-popNode.getY()), 2));
