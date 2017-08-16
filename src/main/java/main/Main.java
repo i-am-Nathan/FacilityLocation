@@ -1,16 +1,9 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.xalan.templates.OutputProperties;
-import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.UndirectedGraph;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleWeightedGraph;
-import org.openide.util.datatransfer.ExTransferable;
 
 public class Main {
 	public static void main(String[] args){
@@ -38,8 +31,11 @@ public class Main {
 		Output output = new Output();
 		SingleSwap ss = new SingleSwap();
 
-		List<Node> chosenFacilities = ss.Search(graph, 3);
-		output.export(chosenFacilities);
+//		List<Node> chosenFacilities = ss.Search(graph, 3);
+		List<List<Node>> chosenFacilities = Utility.findInitialK(graph, 3, 75, "Eigenvector Centrality");
+		for(List<Node> nodeList: chosenFacilities){
+			output.export(nodeList);
+		}
 	}
 }
 

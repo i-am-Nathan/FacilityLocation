@@ -1,9 +1,5 @@
 package main;
 
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.web.WebView;
-import org.apache.xpath.operations.Mod;
 import org.gephi.appearance.api.*;
 import org.gephi.appearance.plugin.PartitionElementColorTransformer;
 import org.gephi.datalab.api.AttributeColumnsController;
@@ -16,13 +12,8 @@ import org.gephi.graph.api.Node;
 import org.gephi.statistics.plugin.EigenvectorCentrality;
 import org.gephi.statistics.plugin.GraphDistance;
 import org.gephi.statistics.plugin.Modularity;
-import org.gephi.statistics.plugin.builder.ConnectedComponentsBuilder;
-import org.gephi.statistics.plugin.builder.ModularityBuilder;
-import org.gephi.statistics.spi.Statistics;
 import org.openide.util.Lookup;
 
-import javax.swing.*;
-import java.awt.print.PrinterException;
 import java.util.ArrayList;
 import java.util.List;
 

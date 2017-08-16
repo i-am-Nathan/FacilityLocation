@@ -1,21 +1,12 @@
 package main;
 
-import org.gephi.graph.api.UndirectedGraph;
-import org.gephi.project.api.ProjectController;
-import org.gephi.project.api.Workspace;
-import org.openide.util.Lookup;
 
 import main.Input.NodeListHolder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
-import org.gephi.graph.api.GraphController;
-import org.gephi.graph.api.GraphModel;
-import org.gephi.graph.api.Node;
 
 public class LocalSearch {
 	@SuppressWarnings("unchecked")

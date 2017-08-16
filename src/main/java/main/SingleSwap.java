@@ -7,11 +7,9 @@ import java.util.List;
 
 import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
 import org.gephi.datalab.api.AttributeColumnsController;
-import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Table;
 import org.gephi.graph.api.UndirectedGraph;
-import org.gephi.statistics.plugin.EigenvectorCentrality;
 import org.openide.util.Lookup;
 
 public class SingleSwap {
@@ -58,9 +56,6 @@ public class SingleSwap {
 				HashMap<Node, Double> distances = computeDistances(graph, swapInNode);
 				for(Node swapOutNode: swapNodes){
 					for(Node targetNode: tempDistances.keySet()){
-//					HashMap<Node, Double> swapInDistance = new HashMap<>();
-//					swapInDistance.put(swapInNode, distances.get(targetNode));
-//					tempDistances.replace(swapOutNode, swapInDistance);
 						HashMap<Node, Double> facilityDistance = tempDistances.getOrDefault(targetNode, new HashMap<>());
 						facilityDistance.put(swapInNode, distances.get(targetNode));
 						facilityDistance.remove(swapOutNode);
