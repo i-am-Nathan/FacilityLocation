@@ -76,13 +76,12 @@ public class ReverseGreedy {
 			}
 		}
 
-		double lowestWeight = Double.MAX_VALUE;
+		double lowestWeight;
 		double tempWeight = 0.0;
+		Node removeNode = null;
+		HashMap<Node, HashMap<Node, Double>> currentBestSet = null;
 		while (facNodes.size() != facCount) {
-			Node removeNode = null;
 			lowestWeight = Double.MAX_VALUE;
-			tempWeight = 0.0;
-			HashMap<Node, HashMap<Node, Double>> currentBestSet = null;
 
 			// Loop through all the facNodes and remove one at a time and check
 			// the weight of that one
