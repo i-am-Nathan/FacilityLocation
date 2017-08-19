@@ -12,7 +12,11 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +68,45 @@ public class Input {
 
         return completeGraph.getModel().getUndirectedGraph(graphView);
     }
-
+    
+    public NodeListHolder  fileToNodeListHolder(String fileName){
+    	NodeListHolder nlh = new NodeListHolder();
+    	List<PopNode> resNodes = new ArrayList();
+    	List<FacNode> facNodes = new ArrayList();
+    	String line;
+    	String splitRegex = ",";
+    	boolean headerRecorded = false;
+    	
+    	try {
+			BufferedReader br = new BufferedReader(new FileReader(fileName));
+			while((line=br.readLine())!=null){
+				if(!headerRecorded){
+					headerRecorded = true;
+					continue;
+				}
+				
+				String[] lineData = line.split(splitRegex);
+				if(lineData[4].startsWith("Business")){
+					facNodes.add(new FacNode(Integer.parseInt(lineData[0]),Integer.parseInt(lineData[1]),Integer.parseInt(lineData[2])));
+				}
+				else if(lineData[4].startsWith("Residential")){
+					resNodes.add(new PopNode(Integer.parseInt(lineData[0]),Integer.parseInt(lineData[1]),Integer.parseInt(lineData[2]),lineData[5]));
+				}
+			}
+    	
+    	
+    	} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}    
+    	nlh.setNodeLists(resNodes,facNodes);
+    	
+    	
+		return nlh;
+    	
+    }
+/*
+ * 
     public NodeListHolder graphToNodeListHolder(UndirectedGraph graph){
         NodeListHolder nlh = new NodeListHolder();
 
@@ -86,7 +128,7 @@ public class Input {
 
         return nlh;
     }
-
+*/
     class NodeListHolder{
         private List<PopNode> popNodeList = new ArrayList<>();
         private List<FacNode> facNodeList = new ArrayList<>();

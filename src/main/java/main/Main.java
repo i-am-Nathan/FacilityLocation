@@ -15,7 +15,7 @@ public class Main {
 		
 		
 		SimpleWeightedGraph<Node, DefaultWeightedEdge> testGraph = new SimpleWeightedGraph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-		List<PopNode> popNodeList = new ArrayList<>();
+	/*	List<PopNode> popNodeList = new ArrayList<>();
 		List<FacNode> facNodeList = new ArrayList<>();
 		
 		//Nodes
@@ -33,12 +33,13 @@ public class Main {
 		testGraph.addVertex(n1);
 		testGraph.addVertex(n2);
 		testGraph.addVertex(n3);
-		testGraph.addVertex(n4);
+		testGraph.addVertex(n4);*/
 
 		Input i = new Input();
 
-		Graph graph = i.importGraph("100m.gml");
-		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(3, graph);
+		Graph graph = i.importGraph("300m.gml");
+
+		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(100, graph);
 		Double weight = 0.0;
 		for(org.gephi.graph.api.Node node : foundLocations.keySet()){
 			System.out.println("THE CHOSEN NODES ARE : " + node.getLabel());
@@ -55,46 +56,42 @@ public class Main {
 }
 
 class Node {
-	protected float xCoord;
-	protected float yCoord;
+	protected int xCoord;
+	protected int yCoord;
+	protected int nodeID;
 	
-	public float getX(){
+	
+	public int getX(){
 		return xCoord;
 	}
 	
-	public float getY(){
+	public int getY(){
 		return yCoord;
 	}
+	
 }
 
 class PopNode extends Node {
-	private float populationScore;
+	String zone;
 	
-	public PopNode(float populationScore, float xCoord, float yCoord){
-		this.populationScore = populationScore;
+	public PopNode(int xCoord, int yCoord, int nodeID, String zone){
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
+		this.nodeID = nodeID;
+		this.zone = zone;
 	}
-	
-	public float getPopulationScore(){
-		return populationScore;
+	public String getZone(){
+		return zone;
 	}
+
 }
 
 class FacNode extends Node {
-	private boolean isVacant;
 	
-	public FacNode(boolean isVacant, float xCoord, float yCoord){
-		this.isVacant = isVacant;
+	public FacNode(int xCoord, int yCoord, int nodeID){
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
+		this.nodeID = nodeID;
 	}
-	
-	public boolean getVacancy(){
-		return isVacant;
-	}
-	
-	public void setVacancy(boolean bool){
-		isVacant = bool;
-	}
+
 }

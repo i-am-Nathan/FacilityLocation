@@ -36,12 +36,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Utility {
-	static int euclidDistance(FacNode fac1, FacNode fac2) {
-		Double distance = Math.sqrt(Math.pow(fac2.xCoord - fac1.xCoord, 2) + Math.pow(fac2.yCoord - fac1.yCoord, 2));
-		return (int) Math.round(distance);
+	public static double euclidDistance(Node node1, Node node2) {
+		double distance = Math.sqrt(Math.pow( node1.x()- node2.x(), 2) + Math.pow(node1.y() - node2.y(), 2));
+		return distance;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static HashMap sortByValues(HashMap map) {
 		List list = new LinkedList(map.entrySet());
 
@@ -162,7 +162,7 @@ public class Utility {
 		}
 
 		nodeLists.add(kNodeList);
-
+ 
 		return nodeLists;
 
 	}
