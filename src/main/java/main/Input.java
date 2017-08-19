@@ -71,8 +71,8 @@ public class Input {
     
     public NodeListHolder  fileToNodeListHolder(String fileName){
     	NodeListHolder nlh = new NodeListHolder();
-    	List<PopNode> resNodes = new ArrayList();
-    	List<FacNode> facNodes = new ArrayList();
+    	List<PopNode> resNodes = new ArrayList<PopNode>();
+    	List<FacNode> facNodes = new ArrayList<FacNode>();
     	String line;
     	String splitRegex = ",";
     	boolean headerRecorded = false;
@@ -90,7 +90,7 @@ public class Input {
 					facNodes.add(new FacNode(Float.valueOf(lineData[0]),Float.valueOf(lineData[1]),Integer.parseInt(lineData[2])));
 				}
 				else if(lineData[4].startsWith("Residential")){
-					resNodes.add(new PopNode(Float.valueOf(lineData[0]),Float.valueOf(lineData[1]),Integer.parseInt(lineData[2]),lineData[5]));
+					resNodes.add(new PopNode(Float.valueOf(lineData[0]),Float.valueOf(lineData[1]),Integer.parseInt(lineData[2]),lineData[5], Float.valueOf(lineData[8])));
 				}
 			}
     	
@@ -147,50 +147,4 @@ public class Input {
         }
     }
 
-    public float CalculatePopulationScore(String zone, float area){
-        int density;
-        switch (zone) {
-            case "1":
-                density = 1200;
-                break;
-            case "2A1":
-                density = 5000;
-                break;
-            case "2A":
-                density = 800;
-                break;
-            case "2B":
-            case "3C":
-                density = 600;
-                break;
-            case "2C":
-                density = 350;
-                break;
-            case "3A":
-            case "4A":
-            case "4B":
-                density = 450;
-                break;
-            case "3B":
-                density = 500;
-                break;
-            case "5":
-                density = 350;
-                break;
-            case "6A":
-            case "6A1":
-            case "6B":
-            case "6B1":
-            case "6C":
-            case "6C1":
-                density = 150;
-                break;
-            case "7":
-                density = 200;
-                break;
-            default:
-               	return 0;
-        }
-        return (area/density);
-    }
 }

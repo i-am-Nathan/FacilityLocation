@@ -79,15 +79,20 @@ class Node {
 
 class PopNode extends Node {
 	String zone;
+	Float area;
 	
-	public PopNode(float xCoord, float yCoord, int nodeID, String zone){
+	public PopNode(float xCoord, float yCoord, int nodeID, String zone, float area){
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
 		this.nodeID = nodeID;
 		this.zone = zone;
+		this.area = area;
 	}
 	public String getZone(){
 		return zone;
+	}
+	public float getArea(){
+		return area;
 	}
 
 }
