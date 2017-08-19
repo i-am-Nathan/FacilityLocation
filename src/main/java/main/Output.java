@@ -86,4 +86,47 @@ public class Output {
         }
 
     }
+    public void exportFacNode(List<FacNode> nodeList){
+        FileWriter writer = null;
+        BufferedReader br = null;
+        String line;
+        String splitRegex = ",";
+        boolean headerRecorded = false;
+        DecimalFormat df = new DecimalFormat("###.#####");
+        df.setRoundingMode(RoundingMode.DOWN);
+
+        try {
+            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Timestamp(System.currentTimeMillis()));
+            writer = new FileWriter(timeStamp+".csv");
+
+            for (FacNode n:nodeList) {
+                br = new BufferedReader(new FileReader("src\\main\\java\\main\\YX.csv"));
+                while ((line = br.readLine()) != null) {
+                    if(!headerRecorded){
+                        writer.append(line);
+                        headerRecorded = true;
+                        continue;
+                    }
+
+                    String[] lineData = line.split(splitRegex);
+                    if(n.getID()== Integer.parseInt(lineData[2])){
+                    	writer.append("\n");
+                    	writer.append(line);
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+                writer.flush();
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }
