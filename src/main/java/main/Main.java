@@ -10,6 +10,8 @@ import org.gephi.graph.api.UndirectedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import main.Input.NodeListHolder;
+
 public class Main {
 	public static void main(String[] args){
 		
@@ -39,6 +41,10 @@ public class Main {
 
 		Graph graph = i.importGraph("300m.gml");
 
+		NodeListHolder nlh = i.fileToNodeListHolder("src\\main\\java\\main\\YX.csv");
+		for(FacNode node:nlh.getFacNodeList()){
+			System.out.println(node.nodeID);
+		}
 		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(100, graph);
 		Double weight = 0.0;
 		for(org.gephi.graph.api.Node node : foundLocations.keySet()){
@@ -56,16 +62,16 @@ public class Main {
 }
 
 class Node {
-	protected int xCoord;
-	protected int yCoord;
+	protected float xCoord;
+	protected float yCoord;
 	protected int nodeID;
 	
 	
-	public int getX(){
+	public float getX(){
 		return xCoord;
 	}
 	
-	public int getY(){
+	public float getY(){
 		return yCoord;
 	}
 	
@@ -74,7 +80,7 @@ class Node {
 class PopNode extends Node {
 	String zone;
 	
-	public PopNode(int xCoord, int yCoord, int nodeID, String zone){
+	public PopNode(float xCoord, float yCoord, int nodeID, String zone){
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
 		this.nodeID = nodeID;
@@ -88,7 +94,7 @@ class PopNode extends Node {
 
 class FacNode extends Node {
 	
-	public FacNode(int xCoord, int yCoord, int nodeID){
+	public FacNode(float xCoord, float yCoord, int nodeID){
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
 		this.nodeID = nodeID;

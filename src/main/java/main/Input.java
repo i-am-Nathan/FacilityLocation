@@ -87,10 +87,10 @@ public class Input {
 				
 				String[] lineData = line.split(splitRegex);
 				if(lineData[4].startsWith("Business")){
-					facNodes.add(new FacNode(Integer.parseInt(lineData[0]),Integer.parseInt(lineData[1]),Integer.parseInt(lineData[2])));
+					facNodes.add(new FacNode(Float.valueOf(lineData[0]),Float.valueOf(lineData[1]),Integer.parseInt(lineData[2])));
 				}
 				else if(lineData[4].startsWith("Residential")){
-					resNodes.add(new PopNode(Integer.parseInt(lineData[0]),Integer.parseInt(lineData[1]),Integer.parseInt(lineData[2]),lineData[5]));
+					resNodes.add(new PopNode(Float.valueOf(lineData[0]),Float.valueOf(lineData[1]),Integer.parseInt(lineData[2]),lineData[5]));
 				}
 			}
     	
