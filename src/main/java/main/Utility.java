@@ -36,8 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Utility {
-	public static double euclidDistance(Node node1, Node node2) {
-		double distance = Math.sqrt(Math.pow( node1.x()- node2.x(), 2) + Math.pow(node1.y() - node2.y(), 2));
+	public static double euclidDistance(FacNode facNode, PopNode resNode) {
+		double distance = Math.sqrt(Math.pow(facNode.getX()- resNode.getX(), 2) + Math.pow(facNode.getY() - resNode.getY(), 2));
 		return distance;
 	}
 
