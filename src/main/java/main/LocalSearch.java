@@ -1,21 +1,12 @@
 package main;
 
-import org.gephi.graph.api.UndirectedGraph;
-import org.gephi.project.api.ProjectController;
-import org.gephi.project.api.Workspace;
-import org.openide.util.Lookup;
 
 import main.Input.NodeListHolder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
-import org.gephi.graph.api.GraphController;
-import org.gephi.graph.api.GraphModel;
-import org.gephi.graph.api.Node;
 
 public class LocalSearch {
 	@SuppressWarnings("unchecked")
@@ -164,7 +155,7 @@ public class LocalSearch {
 	}
 
 	private static Double calculateScore(PopNode popNode, FacNode facNode){
-		float populationScore = popNode.getPopulationScore();
+		double populationScore = popNode.getPopulationScore();
 
 		Double distance = Math.sqrt(Math.pow((facNode.getX()-popNode.getX()), 2) +
 				Math.pow((facNode.getY()-popNode.getY()), 2));

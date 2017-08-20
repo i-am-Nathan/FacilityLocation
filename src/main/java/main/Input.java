@@ -118,7 +118,7 @@ public class Input {
             String label = n.getLabel();
             String[] nodeLabels = label.split(";");
             if (nodeLabels[1].startsWith("Residential")){
-                float populationScore = CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5]));
+                double populationScore = Utility.CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5]));
                 popNodeList.add(new PopNode(populationScore,n.x(),n.y()));
             } else if (nodeLabels[1].startsWith("Business")){
                 facNodeList.add(new FacNode(true, n.x(),n.y()));
