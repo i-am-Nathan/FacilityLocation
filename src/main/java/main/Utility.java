@@ -31,6 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Utility {
+	
+	public static String FACILITY_NAME = "Business";
+	public static String RESIDENTIAL_NAME = "Residential";
+	
 	public static double euclidDistance(Node facNode, Node resNode) {
 		double distance = Math.sqrt(Math.pow(facNode.x()- resNode.x(), 2) + Math.pow(facNode.y() - resNode.y(), 2));
 		return distance;
