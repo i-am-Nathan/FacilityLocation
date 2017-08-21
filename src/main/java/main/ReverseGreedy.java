@@ -1,23 +1,15 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import org.gephi.algorithms.shortestpath.AbstractShortestPathAlgorithm;
 import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
 import org.gephi.datalab.api.AttributeColumnsController;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Table;
-import org.gephi.graph.api.UndirectedGraph;
 import org.openide.util.Lookup;
-
-import main.Input.NodeListHolder;
 
 public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
