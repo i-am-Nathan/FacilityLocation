@@ -1,4 +1,4 @@
-package main;
+
 
 import org.gephi.datalab.api.AttributeColumnsController;
 import org.gephi.filters.api.FilterController;

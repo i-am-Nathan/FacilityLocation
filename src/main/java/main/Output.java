@@ -1,4 +1,4 @@
-package main;
+
 
 import org.gephi.graph.api.Node;
 

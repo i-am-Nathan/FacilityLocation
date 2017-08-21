@@ -1,4 +1,4 @@
-package main;
+
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import org.apache.xpath.operations.Mod;
+import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
 import org.gephi.appearance.api.*;
 import org.gephi.appearance.plugin.PartitionElementColorTransformer;
 import org.gephi.datalab.api.AttributeColumnsController;
@@ -21,7 +22,6 @@ import org.gephi.filters.api.Query;
 import org.gephi.filters.plugin.graph.GiantComponentBuilder;
 import org.gephi.filters.plugin.partition.PartitionBuilder;
 import org.gephi.graph.api.*;
-import org.gephi.graph.api.Node;
 import org.gephi.statistics.plugin.EigenvectorCentrality;
 import org.gephi.statistics.plugin.GraphDistance;
 import org.gephi.statistics.plugin.Modularity;
@@ -160,6 +160,12 @@ public class Utility {
 
 		return nodeLists;
 
+	}
+	
+	public static HashMap<Node, Double> computeDistances(UndirectedGraph graph, Node node){
+		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(graph, node);
+		dspa.compute();
+		return dspa.getDistances();
 	}
 
 	public static double CalculatePopulationScore(String zone, float area){

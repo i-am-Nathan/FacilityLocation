@@ -1,5 +1,3 @@
-package main;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +32,7 @@ public class SingleSwap {
 		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
 
 		for (Node n: swapNodes){
-			HashMap<Node, Double> distances = computeDistances(graph, n);
+			HashMap<Node, Double> distances = Utility.computeDistances(graph, n);
 
 			for(Node targetNode: distances.keySet()){
 				if(targetNode.getLabel().contains("Residential")){
@@ -53,7 +51,7 @@ public class SingleSwap {
 			oldScore = bestScore;
 			for(Node swapInNode: facNodes){
 				HashMap<Node, HashMap<Node, Double>> tempDistances = resNodes;
-				HashMap<Node, Double> distances = computeDistances(graph, swapInNode);
+				HashMap<Node, Double> distances = Utility.computeDistances(graph, swapInNode);
 				for(Node swapOutNode: swapNodes){
 					for(Node targetNode: tempDistances.keySet()){
 						HashMap<Node, Double> facilityDistance = tempDistances.getOrDefault(targetNode, new HashMap<>());
@@ -88,12 +86,6 @@ public class SingleSwap {
 		}
 
 		return score;
-	}
-
-	public HashMap<Node, Double> computeDistances(UndirectedGraph graph, Node node){
-		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(graph, node);
-		dspa.compute();
-		return dspa.getDistances();
 	}
 }
 

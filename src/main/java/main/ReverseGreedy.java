@@ -1,4 +1,4 @@
-package main;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import org.openide.util.Lookup;
 
 public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
-	public static HashMap<Node, Double> Search(int facCount, Graph wholeGraph) {
+	public static HashMap<Node, Double> Search(int facCount, Graph wholeGraph, boolean withEuclidDistance) {
 
 		// List of all the facility nodes
 		HashMap<Node, Double> facNodes = new HashMap<Node, Double>();
@@ -35,37 +35,11 @@ public class ReverseGreedy {
 		}
 
 		// Find closest facility that the residential nodes can get to
-		HashMap<Node, HashMap<Node, Double>> closestFacToResNodes = new HashMap<Node, HashMap<Node, Double>>();
-
-		// Loops through all the residential nodes and creates a list of
-		// business nodes that it is closest to.
-		for (Node node : resNodes) {
-			// distances of residential node with respect to all the other nodes
-			HashMap<Node, Double> distances = computeDistances(wholeGraph, node);
-
-			// Get all the facilities that the residential nodes are connected
-			// to, the double is the distance away from the facility from the
-			// node
-			HashMap<Node, Double> connectedFacs = new HashMap<Node, Double>();
-
-			// Filtering the distances hashmap to only contain facilities
-			for (Node connectedNode : distances.keySet()) {
-				String label = connectedNode.getLabel();
-				String[] nodeLabels = label.split(";");
-				if (nodeLabels[1].startsWith("Business")) {
-					if (!distances.get(connectedNode).isInfinite()) {
-						connectedFacs.put(connectedNode, distances.get(connectedNode));
-					}
-				}
-			}
-
-			// Sort the facility nodes by order. The first element is the
-			// closest to the residential node.
-			// Only add the residential nodes that are connected to the network.
-			if (connectedFacs.size() != 0) {
-				connectedFacs = Utility.sortByValues(connectedFacs);
-				closestFacToResNodes.put(node, connectedFacs);
-			}
+		HashMap<Node, HashMap<Node, Double>> closestFacToResNodes = null;
+		if(withEuclidDistance){
+			
+		}else {
+			closestFacToResNodes = computeDijkstraDistances(wholeGraph,resNodes);
 		}
 
 		double lowestWeight;
@@ -113,6 +87,42 @@ public class ReverseGreedy {
 		}
 
 		return facNodes;
+	}
+
+	private static HashMap<Node, HashMap<Node, Double>> computeDijkstraDistances(Graph wholeGraph,
+			List<Node> resNodes) {
+		HashMap<Node,HashMap<Node,Double>> closestFacToResNodes = new HashMap<Node,HashMap<Node,Double>>();
+		// Loops through all the residential nodes and creates a list of
+		// business nodes that it is closest to.
+		for (Node node : resNodes) {
+			// distances of residential node with respect to all the other nodes
+			HashMap<Node, Double> distances = computeDistances(wholeGraph, node);
+
+			// Get all the facilities that the residential nodes are connected
+			// to, the double is the distance away from the facility from the
+			// node
+			HashMap<Node, Double> connectedFacs = new HashMap<Node, Double>();
+
+			// Filtering the distances hashmap to only contain facilities
+			for (Node connectedNode : distances.keySet()) {
+				String label = connectedNode.getLabel();
+				String[] nodeLabels = label.split(";");
+				if (nodeLabels[1].startsWith("Business")) {
+					if (!distances.get(connectedNode).isInfinite()) {
+						connectedFacs.put(connectedNode, distances.get(connectedNode));
+					}
+				}
+			}
+
+			// Sort the facility nodes by order. The first element is the
+			// closest to the residential node.
+			// Only add the residential nodes that are connected to the network.
+			if (connectedFacs.size() != 0) {
+				connectedFacs = Utility.sortByValues(connectedFacs);
+				closestFacToResNodes.put(node, connectedFacs);
+			}
+		}
+		return closestFacToResNodes;
 	}
 
 	private static double CalculateWeight(HashMap<Node, HashMap<Node, Double>> closestFacToResNodes,

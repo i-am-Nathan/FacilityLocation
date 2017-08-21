@@ -1,4 +1,4 @@
-package main;
+
 
 import java.util.*;
 
@@ -38,7 +38,7 @@ public class Main {
 			System.out.println("Distances: "+Utility.euclidDistance(node1, node2));
 		}
 
-		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(100, graph);
+		HashMap<org.gephi.graph.api.Node, Double> foundLocations = ReverseGreedy.Search(100, graph,false);
 
 		Double weight = 0.0;
 		for(org.gephi.graph.api.Node node : foundLocations.keySet()){
