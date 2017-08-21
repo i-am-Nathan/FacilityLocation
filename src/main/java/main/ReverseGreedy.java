@@ -22,6 +22,7 @@ public class ReverseGreedy {
 		Table edgeTable = wholeGraph.getModel().getEdgeTable();
 		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
 
+		//Filter the wholeGraph into facNodes and resNodes
 		for (Node node : wholeGraph.getNodes()) {
 			String label = node.getLabel();
 			String[] nodeLabels = label.split(";");
@@ -32,6 +33,7 @@ public class ReverseGreedy {
 			}
 		}
 
+		//Hashmap which represents <ResNode, HashMap<FacNode,DistanceFromFac>
 		HashMap<Node, HashMap<Node, Double>> closestFacToResNodes = null;
 		if(withEuclidDistance){
 			closestFacToResNodes = computeEuclidDistance(resNodes,facNodes);
@@ -43,18 +45,18 @@ public class ReverseGreedy {
 		double tempWeight = 0.0;
 		Node removeNode = null;
 		HashMap<Node, HashMap<Node, Double>> currentBestSet = null;
+		/**
+		 * Loop through all the facNodes and remove one at a time and calculate weight
+		 * until there is only facCount of facilities left
+		 */
 		while (facNodes.size() != facCount) {
 			lowestWeight = Double.MAX_VALUE;
 
-			// Loop through all the facNodes and remove one at a time and check
-			// the weight of that one
+			
 			for (Node facNode : facNodes.keySet()) {
 
-				// For some reason these 2 does not reset
 				HashMap<Node, HashMap<Node, Double>> tempFacToRes = copyHashMap(closestFacToResNodes);
 
-				// Remove the currently selected facilities on all residential
-				// nodes.
 				for (Node resNode : tempFacToRes.keySet()) {
 					tempFacToRes.get(resNode).remove(facNode);
 				}
@@ -132,12 +134,9 @@ public class ReverseGreedy {
 			Double lowestWeight) {
 
 		double facWeight = 0.0;
-		// Get the weight of all facility nodes
-		// Loops through ll residential nodes
+
 		if (closestFacToResNodes.keySet() != null) {
 			for (Node resNode : closestFacToResNodes.keySet()) {
-				// gets a facility closest to res
-
 				HashMap<Node, Double> map = closestFacToResNodes.get(resNode);
 				for (Node facNode : map.keySet()) {
 					String[] nodeLabel = resNode.getLabel().split(";");
