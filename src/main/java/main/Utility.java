@@ -162,8 +162,8 @@ public class Utility {
 
 	}
 	
-	public static HashMap<Node, Double> computeDistances(UndirectedGraph graph, Node node){
-		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(graph, node);
+	public static HashMap<Node, Double> computeDistances(Graph wholeGraph, Node node){
+		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(wholeGraph, node);
 		dspa.compute();
 		return dspa.getDistances();
 	}

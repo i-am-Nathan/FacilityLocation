@@ -96,7 +96,7 @@ public class ReverseGreedy {
 		// business nodes that it is closest to.
 		for (Node node : resNodes) {
 			// distances of residential node with respect to all the other nodes
-			HashMap<Node, Double> distances = computeDistances(wholeGraph, node);
+			HashMap<Node, Double> distances = Utility.computeDistances(wholeGraph, node);
 
 			// Get all the facilities that the residential nodes are connected
 			// to, the double is the distance away from the facility from the
@@ -172,11 +172,5 @@ public class ReverseGreedy {
 			tempFacToRes.put(node, tempFacNodes);
 		}
 		return tempFacToRes;
-	}
-
-	private static HashMap<Node, Double> computeDistances(Graph graph, Node node) {
-		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(graph, node);
-		dspa.compute();
-		return dspa.getDistances();
 	}
 }
