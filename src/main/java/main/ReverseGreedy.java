@@ -15,7 +15,7 @@ import org.openide.util.Lookup;
 
 public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
-	public static HashMap<Node, Double> Search(int facCount, Graph wholeGraph, boolean withEuclidDistance) {
+	public static List<Node> Search(int facCount, Graph wholeGraph, boolean withEuclidDistance) {
 
 		HashMap<Node, Double> facNodes = new HashMap<Node, Double>();
 		List<Node> resNodes = new ArrayList<Node>();
@@ -83,11 +83,12 @@ public class ReverseGreedy {
 				closestFacToResNodes.put(node, currentBestSet.get(node));
 			}
 			facNodes.remove(removeNode);
-			System.out.println("NEW WEIGHT: " + lowestWeight);
-
+			System.out.printf("NEW WEIGHT: %.0f\n", lowestWeight);
+			System.out.println("Nodes left: "+ facNodes.size());
 		}
+		List<Node> result = new ArrayList<Node>(facNodes.keySet());
 
-		return facNodes;
+		return result;
 	}
 
 	private static HashMap<Node, HashMap<Node, Double>> computeEuclidDistance(List<Node> resNodes,

@@ -56,6 +56,13 @@ public class Main {
 		SingleSwap ss = new SingleSwap();
 		List<Node> result = ss.Search((UndirectedGraph)graph,3);
 
+		System.out.printf("THE RESULTING SCORE FOR SINGLE SWAP IS: %f\n",Utility.calculateFinalScore(graph, result));
+
+
+//		List<Node> rgresult = ReverseGreedy.Search(3, graph, false);
+//
+//		System.out.printf("THE RESULTING SCORE FOR REVERSE GREEDY IS: %.0f\n",Utility.calculateFinalScore(graph, rgresult));
+
 		Output o = new Output();
 		o.export(result);
 	}

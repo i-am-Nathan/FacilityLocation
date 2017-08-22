@@ -87,12 +87,12 @@ public class SingleSwap {
 					resNodes = bestSet.resultingSet;
 				}
 			}
-			System.out.println("\n### The best score for this round is: "+bestScore+"\n");
+//			System.out.println("\n### The best score for this round is: "+bestScore+"\n");
 		}
 
 		List<Node> selectedNodes = new ArrayList<>(swapNodes);
 		for(Node n: selectedNodes){
-			System.out.println("Node id "+n.getId().toString()+" "+n.getLabel());
+//			System.out.println("Node id "+n.getId().toString()+" "+n.getLabel());
 		}
 		return selectedNodes;
 

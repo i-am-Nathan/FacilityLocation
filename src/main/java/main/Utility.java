@@ -103,18 +103,18 @@ public class Utility {
 			Function func2 = appearanceModel.getNodeFunction(graph, classColumn,
 					PartitionElementColorTransformer.class);
 			Partition partition2 = ((PartitionFunction) func2).getPartition();
-			System.out.println(partition2.size() + " communities found");
+//			System.out.println(partition2.size() + " communities found");
 			percentages = partition2.getSortedValues().toArray();
 
 			for (int classIndex = 0; classIndex < k; classIndex++) {
-				System.out.println("Community " + classIndex + ": " + partition2.percentage(percentages[classIndex]));
+//				System.out.println("Community " + classIndex + ": " + partition2.percentage(percentages[classIndex]));
 				totalCoverage += partition2.percentage(percentages[classIndex]);
 			}
 			resolution++;
-			System.out.println("Total coverage over " + k + " communities: " + totalCoverage + "%\n");
+//			System.out.println("Total coverage over " + k + " communities: " + totalCoverage + "%\n");
 		}
 
-		System.out.println("#### Total coverage now over " + coverageThreshold + "%!\n\n");
+//		System.out.println("#### Total coverage now over " + coverageThreshold + "%!\n\n");
 
 		PartitionBuilder.PartitionFilter partitionFilter = new PartitionBuilder.NodePartitionFilter(classColumn,
 				appearanceModel);
@@ -134,8 +134,8 @@ public class Utility {
 			double maxCentrality = 0;
 			org.gephi.graph.api.Node maxCentralityNode = null;
 
-			System.out.println("Nodes in community " + classIndex + ": " + communityGraph.getNodeCount());
-			System.out.println("Edges in community " + classIndex + ": " + communityGraph.getEdgeCount());
+//			System.out.println("Nodes in community " + classIndex + ": " + communityGraph.getNodeCount());
+//			System.out.println("Edges in community " + classIndex + ": " + communityGraph.getEdgeCount());
 
 			Column centralityColumn = null;
 
@@ -234,6 +234,30 @@ public class Utility {
 				return 0;
 		}
 		return (area/density);
+	}
+
+	public static double calculateFinalScore(Graph wholeGraph, List<Node> nodeList){
+		double score = 0;
+		HashMap<Node, HashMap<Node, Double>> distancesToResNodes = new HashMap<>();
+		for(Node n: nodeList){
+			HashMap<Node, Double> distances = Utility.computeDistances(wholeGraph, n);
+			for(Node targetNode: distances.keySet()){
+				if(targetNode.getLabel().contains("Residential")){
+					HashMap<Node, Double> currentFacDist = distancesToResNodes.get(targetNode);
+					if(currentFacDist == null) currentFacDist = new HashMap<>();
+					currentFacDist.put(n, distances.get(targetNode));
+					distancesToResNodes.put(targetNode, currentFacDist);
+				}
+			}
+		}
+		double minimumDistance;
+		for(Node resNode: distancesToResNodes.keySet()){
+			String[] nodeLabels = resNode.getLabel().split(";");
+			minimumDistance = Collections.min(distancesToResNodes.get(resNode).values());
+			if(Double.isFinite(minimumDistance))
+				score += Utility.CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5])) * minimumDistance;
+		}
+		return score;
 	}
 
 
