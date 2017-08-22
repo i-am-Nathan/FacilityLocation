@@ -35,7 +35,7 @@ public class SingleSwap {
 		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
 
 		for (Node n: swapNodes){
-			HashMap<Node, Double> distances = computeDistances(graph, n);
+			HashMap<Node, Double> distances = Utility.computeDistances(graph, n);
 
 			for(Node targetNode: distances.keySet()){
 				if(targetNode.getLabel().contains("Residential")){
@@ -57,7 +57,7 @@ public class SingleSwap {
 					continue;
 				}
 
-				HashMap<Node, Double> distances = computeDistances(graph, swapInNode);
+				HashMap<Node, Double> distances = Utility.computeDistances(graph, swapInNode);
 				HashMap<Node, Double> replacedSetScore = new HashMap<>();
 				List<SetScore> betterScores = new ArrayList<>();
 				for(Node swapOutNode: swapNodes){
@@ -124,12 +124,6 @@ public class SingleSwap {
 		}
 
 		return score;
-	}
-
-	public HashMap<Node, Double> computeDistances(UndirectedGraph graph, Node node){
-		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(graph, node);
-		dspa.compute();
-		return dspa.getDistances();
 	}
 }
 
