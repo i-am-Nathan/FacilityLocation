@@ -1,4 +1,4 @@
-
+package main;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,11 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
-
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.web.WebView;
-import org.apache.xpath.operations.Mod;
 import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
 import org.gephi.appearance.api.*;
 import org.gephi.appearance.plugin.PartitionElementColorTransformer;
@@ -26,20 +21,24 @@ import org.gephi.statistics.plugin.EigenvectorCentrality;
 import org.gephi.statistics.plugin.GraphDistance;
 import org.gephi.statistics.plugin.Modularity;
 import org.openide.util.Lookup;
-
 import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Utility class for calling common methods
+ */
 public class Utility {
 	
 	public static String FACILITY_NAME = "Business";
 	public static String RESIDENTIAL_NAME = "Residential";
+	public static String XY_FILE = "src\\main\\java\\main\\YX.csv";
 	
+	//Euclid distance between 2 nodes
 	public static double euclidDistance(Node facNode, Node resNode) {
 		double distance = Math.sqrt(Math.pow(facNode.x()- resNode.x(), 2) + Math.pow(facNode.y() - resNode.y(), 2));
 		return distance;
 	}
 
+	//Sort hashmap by the values
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static HashMap sortByValues(HashMap map) {
 		List list = new LinkedList(map.entrySet());
@@ -63,6 +62,7 @@ public class Utility {
 
 	}
 
+	//Find k facilities based on the clustering and centrality of the node population
 	static List<List<Node>> findInitialK(Graph graph, int k, float coverageThreshold, String centralityType) {
 		List<List<Node>> nodeLists = new ArrayList<>();
 		List<org.gephi.graph.api.Node> kNodeList = new ArrayList<>();
@@ -141,7 +141,7 @@ public class Utility {
 
 			for (org.gephi.graph.api.Node node : communityGraph.getNodes()) {
 				communityNodeList.add(node);
-				if (!node.getLabel().contains("Business"))
+				if (!node.getLabel().contains(FACILITY_NAME))
 					continue;
 				for (Column col : node.getAttributeColumns()) {
 					if (col.getTitle().equals(centralityType)) {
@@ -166,6 +166,7 @@ public class Utility {
 
 	}
 	
+	//Uses dijkstra algorithm and finds the distance of the whole graph relative to the node
 	public static HashMap<Node, Double> computeDistances(Graph wholeGraph, Node node){
 		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(wholeGraph, node);
 		dspa.compute();

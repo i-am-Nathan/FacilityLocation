@@ -1,3 +1,5 @@
+package main;
+
 
 
 import org.gephi.datalab.api.AttributeColumnsController;
@@ -34,6 +36,7 @@ public class Input {
         workspace = pc.getCurrentWorkspace();
     }
 
+    //Imports a graph from the supplied file name
     public UndirectedGraph importGraph(String fileName){
         ImportController importController = Lookup.getDefault().lookup(ImportController.class);
         Container container;
@@ -70,6 +73,7 @@ public class Input {
 //        return completeGraph.getModel().getUndirectedGraph(graphView);
 //    }
 
+    //Sets the x and y coordinates for the graph
     public void setXY(UndirectedGraph graph){
         BufferedReader br = null;
         String line;
@@ -82,7 +86,7 @@ public class Input {
         try {
             for (Node n:graph.getNodes()) {
                 String[] nodeData = n.getLabel().split( ";");
-                br = new BufferedReader(new FileReader("src\\main\\java\\main\\YX.csv"));
+                br = new BufferedReader(new FileReader(Utility.XY_FILE));
                 while ((line = br.readLine()) != null) {
                     if(!headerRecorded){
                         headerRecorded = true;
@@ -116,64 +120,4 @@ public class Input {
             }
         }
     }
-//
-//    public NodeListHolder  fileToNodeListHolder(String fileName){
-//    	NodeListHolder nlh = new NodeListHolder();
-//    	List<PopNode> resNodes = new ArrayList<PopNode>();
-//    	List<FacNode> facNodes = new ArrayList<FacNode>();
-//    	String line;
-//    	String splitRegex = ",";
-//    	boolean headerRecorded = false;
-//
-//    	try {
-//			BufferedReader br = new BufferedReader(new FileReader(fileName));
-//			while((line=br.readLine())!=null){
-//				if(!headerRecorded){
-//					headerRecorded = true;
-//					continue;
-//				}
-//
-//				String[] lineData = line.split(splitRegex);
-//				if(lineData[4].startsWith("Business")){
-//					facNodes.add(new FacNode(Float.valueOf(lineData[0]),Float.valueOf(lineData[1]),Integer.parseInt(lineData[2])));
-//				}
-//				else if(lineData[4].startsWith("Residential")){
-//					resNodes.add(new PopNode(Float.valueOf(lineData[0]),Float.valueOf(lineData[1]),Integer.parseInt(lineData[2]),lineData[5], Float.valueOf(lineData[8])));
-//				}
-//			}
-//
-//
-//    	} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//    	nlh.setNodeLists(resNodes,facNodes);
-//
-//
-//		return nlh;
-//
-//    }
-/*
- *
-    public NodeListHolder graphToNodeListHolder(UndirectedGraph graph){
-        NodeListHolder nlh = new NodeListHolder();
-
-        List<PopNode> popNodeList = new ArrayList<>();
-        List<FacNode> facNodeList = new ArrayList<>();
-
-//        List<String> zones = new ArrayList<>();
-        for (org.gephi.graph.api.Node n: graph.getNodes()) {
-            String label = n.getLabel();
-            String[] nodeLabels = label.split(";");
-            if (nodeLabels[1].startsWith("Residential")){
-                double populationScore = Utility.CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5]));
-                popNodeList.add(new PopNode(populationScore,n.x(),n.y()));
-            } else if (nodeLabels[1].startsWith("Business")){
-                facNodeList.add(new FacNode(true, n.x(),n.y()));
-            }
-        }
-        nlh.setNodeLists(popNodeList, facNodeList);
-
-        return nlh;
-    }
-*/
 }
