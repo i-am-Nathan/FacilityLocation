@@ -162,6 +162,22 @@ public class Utility {
 
 	}
 
+	public static HashMap<Node, HashMap<Node, Double>> copyHashMap(
+			HashMap<Node, HashMap<Node, Double>> closestFacToResNodes) {
+		HashMap<Node, HashMap<Node, Double>> tempFacToRes = new HashMap<Node, HashMap<Node, Double>>();
+
+		new HashMap<Node, HashMap<Node, Double>>();
+		tempFacToRes.clear();
+		for (Node node : closestFacToResNodes.keySet()) {
+			HashMap<Node, Double> tempFacNodes = new HashMap<Node, Double>();
+			for (Node tempNode : closestFacToResNodes.get(node).keySet()) {
+				tempFacNodes.put(tempNode, closestFacToResNodes.get(node).get(tempNode));
+			}
+			tempFacToRes.put(node, tempFacNodes);
+		}
+		return tempFacToRes;
+	}
+
 	public static double CalculatePopulationScore(String zone, float area){
 		int density;
 		switch (zone) {

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import com.mysql.jdbc.Util;
 import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
 import org.gephi.datalab.api.AttributeColumnsController;
 import org.gephi.graph.api.Node;
@@ -52,28 +53,63 @@ public class SingleSwap {
 		while (oldScore != bestScore){
 			oldScore = bestScore;
 			for(Node swapInNode: facNodes){
-				HashMap<Node, HashMap<Node, Double>> tempDistances = resNodes;
+				if(swapNodes.contains(swapInNode)) {
+					continue;
+				}
+
 				HashMap<Node, Double> distances = computeDistances(graph, swapInNode);
+				HashMap<Node, Double> replacedSetScore = new HashMap<>();
+				List<SetScore> betterScores = new ArrayList<>();
 				for(Node swapOutNode: swapNodes){
+					HashMap<Node, HashMap<Node, Double>> tempDistances = Utility.copyHashMap(resNodes);
 					for(Node targetNode: tempDistances.keySet()){
 						HashMap<Node, Double> facilityDistance = tempDistances.getOrDefault(targetNode, new HashMap<>());
 						facilityDistance.put(swapInNode, distances.get(targetNode));
 						facilityDistance.remove(swapOutNode);
 					}
 					double tempScore = calculateSetScore(tempDistances);
+
 					if(tempScore < bestScore){
-						resNodes = tempDistances;
-						bestScore = tempScore;
-						System.out.println("Best Score found!: "+bestScore);
+						SetScore betterScore = new SetScore(swapInNode, swapOutNode, tempScore, tempDistances);
+						betterScores.add(betterScore);
 					}
+				}
+				if(betterScores.size() > 0){
+					SetScore bestSet = null;
+					for(SetScore set: betterScores){
+						if(set.score < bestScore) {
+							bestScore = set.score;
+							bestSet = set;
+						}
+					}
+					swapNodes.remove(bestSet.swapOutNode);
+					swapNodes.add(bestSet.swapInNode);
+					resNodes = bestSet.resultingSet;
 				}
 			}
 			System.out.println("\n### The best score for this round is: "+bestScore+"\n");
 		}
 
 		List<Node> selectedNodes = new ArrayList<>(swapNodes);
+		for(Node n: selectedNodes){
+			System.out.println("Node id "+n.getId().toString()+" "+n.getLabel());
+		}
 		return selectedNodes;
 
+	}
+
+	class SetScore{
+		Node swapInNode;
+		Node swapOutNode;
+		double score;
+		HashMap<Node, HashMap<Node, Double>> resultingSet = new HashMap<>();
+
+		public SetScore(Node swapInNode, Node swapOutNode, double score, HashMap<Node, HashMap<Node, Double>> resultingSet) {
+			this.swapInNode = swapInNode;
+			this.swapOutNode = swapOutNode;
+			this.score = score;
+			this.resultingSet = resultingSet;
+		}
 	}
 
 	public double calculateSetScore(HashMap<Node, HashMap<Node, Double>> distancesToFacs){

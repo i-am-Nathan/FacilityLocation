@@ -80,7 +80,7 @@ public class ReverseGreedy {
 			for (Node facNode : facNodes.keySet()) {
 
 				// For some reason these 2 does not reset
-				HashMap<Node, HashMap<Node, Double>> tempFacToRes = copyHashMap(closestFacToResNodes);
+				HashMap<Node, HashMap<Node, Double>> tempFacToRes = Utility.copyHashMap(closestFacToResNodes);
 
 				// Remove the currently selected facilities on all residential
 				// nodes.
@@ -146,22 +146,6 @@ public class ReverseGreedy {
 		}
 
 		return facWeight;
-	}
-
-	private static HashMap<Node, HashMap<Node, Double>> copyHashMap(
-			HashMap<Node, HashMap<Node, Double>> closestFacToResNodes) {
-		HashMap<Node, HashMap<Node, Double>> tempFacToRes = new HashMap<Node, HashMap<Node, Double>>();
-
-		new HashMap<Node, HashMap<Node, Double>>();
-		tempFacToRes.clear();
-		for (Node node : closestFacToResNodes.keySet()) {
-			HashMap<Node, Double> tempFacNodes = new HashMap<Node, Double>();
-			for (Node tempNode : closestFacToResNodes.get(node).keySet()) {
-				tempFacNodes.put(tempNode, closestFacToResNodes.get(node).get(tempNode));
-			}
-			tempFacToRes.put(node, tempFacNodes);
-		}
-		return tempFacToRes;
 	}
 
 	private static HashMap<Node, Double> computeDistances(Graph graph, Node node) {
