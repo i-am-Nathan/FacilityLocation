@@ -1,5 +1,7 @@
 package main;
 
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +15,8 @@ import org.openide.util.Lookup;
 
 public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
-	public static HashMap<Node, Double> Search(int facCount, Graph wholeGraph) {
+	public static HashMap<Node, Double> Search(int facCount, Graph wholeGraph, boolean withEuclidDistance) {
 
-		// List of all the facility nodes
 		HashMap<Node, Double> facNodes = new HashMap<Node, Double>();
 		List<Node> resNodes = new ArrayList<Node>();
 		
@@ -23,67 +24,41 @@ public class ReverseGreedy {
 		Table edgeTable = wholeGraph.getModel().getEdgeTable();
 		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
 
-		// Insert nodes into facNodes and resNodes list, sort them out
+		//Filter the wholeGraph into facNodes and resNodes
 		for (Node node : wholeGraph.getNodes()) {
 			String label = node.getLabel();
 			String[] nodeLabels = label.split(";");
-			if (nodeLabels[1].startsWith("Business")) {
+			if (nodeLabels[1].startsWith(Utility.FACILITY_NAME)) {
 				facNodes.put(node, 0.0);
-			} else if (nodeLabels[1].startsWith("Residential")) {
+			} else if (nodeLabels[1].startsWith(Utility.RESIDENTIAL_NAME)) {
 				resNodes.add(node);
 			}
 		}
 
-		// Find closest facility that the residential nodes can get to
-		HashMap<Node, HashMap<Node, Double>> closestFacToResNodes = new HashMap<Node, HashMap<Node, Double>>();
-
-		// Loops through all the residential nodes and creates a list of
-		// business nodes that it is closest to.
-		for (Node node : resNodes) {
-			// distances of residential node with respect to all the other nodes
-			HashMap<Node, Double> distances = computeDistances(wholeGraph, node);
-
-			// Get all the facilities that the residential nodes are connected
-			// to, the double is the distance away from the facility from the
-			// node
-			HashMap<Node, Double> connectedFacs = new HashMap<Node, Double>();
-
-			// Filtering the distances hashmap to only contain facilities
-			for (Node connectedNode : distances.keySet()) {
-				String label = connectedNode.getLabel();
-				String[] nodeLabels = label.split(";");
-				if (nodeLabels[1].startsWith("Business")) {
-					if (!distances.get(connectedNode).isInfinite()) {
-						connectedFacs.put(connectedNode, distances.get(connectedNode));
-					}
-				}
-			}
-
-			// Sort the facility nodes by order. The first element is the
-			// closest to the residential node.
-			// Only add the residential nodes that are connected to the network.
-			if (connectedFacs.size() != 0) {
-				connectedFacs = Utility.sortByValues(connectedFacs);
-				closestFacToResNodes.put(node, connectedFacs);
-			}
+		//Hashmap which represents <ResNode, HashMap<FacNode,DistanceFromFac>
+		HashMap<Node, HashMap<Node, Double>> closestFacToResNodes = null;
+		if(withEuclidDistance){
+			closestFacToResNodes = computeEuclidDistance(resNodes,facNodes);
+		}else {
+			closestFacToResNodes = computeDijkstraDistances(wholeGraph,resNodes);
 		}
 
 		double lowestWeight;
 		double tempWeight = 0.0;
 		Node removeNode = null;
 		HashMap<Node, HashMap<Node, Double>> currentBestSet = null;
+		/**
+		 * Loop through all the facNodes and remove one at a time and calculate weight
+		 * until there is only facCount of facilities left
+		 */
 		while (facNodes.size() != facCount) {
 			lowestWeight = Double.MAX_VALUE;
 
-			// Loop through all the facNodes and remove one at a time and check
-			// the weight of that one
+			
 			for (Node facNode : facNodes.keySet()) {
 
-				// For some reason these 2 does not reset
-				HashMap<Node, HashMap<Node, Double>> tempFacToRes = Utility.copyHashMap(closestFacToResNodes);
+				HashMap<Node, HashMap<Node, Double>> tempFacToRes = copyHashMap(closestFacToResNodes);
 
-				// Remove the currently selected facilities on all residential
-				// nodes.
 				for (Node resNode : tempFacToRes.keySet()) {
 					tempFacToRes.get(resNode).remove(facNode);
 				}
@@ -115,16 +90,55 @@ public class ReverseGreedy {
 		return facNodes;
 	}
 
+	private static HashMap<Node, HashMap<Node, Double>> computeEuclidDistance(List<Node> resNodes,
+			HashMap<Node, Double> facNodes) {
+		HashMap<Node, HashMap<Node,Double>> connectedFacToRes = new HashMap<Node,HashMap<Node,Double>>();
+		for(Node resNode:resNodes){
+			HashMap<Node,Double> facScores = new HashMap<Node,Double>();
+			for(Node facNode:facNodes.keySet()){
+				facScores.put(facNode, Utility.euclidDistance(facNode,resNode));
+			}
+			connectedFacToRes.put(resNode, facScores);
+		}
+		return connectedFacToRes;
+	}
+
+	private static HashMap<Node, HashMap<Node, Double>> computeDijkstraDistances(Graph wholeGraph,
+			List<Node> resNodes) {
+		HashMap<Node,HashMap<Node,Double>> closestFacToResNodes = new HashMap<Node,HashMap<Node,Double>>();
+
+		for (Node node : resNodes) {
+			HashMap<Node, Double> distances = Utility.computeDistances(wholeGraph, node);
+			HashMap<Node, Double> connectedFacs = new HashMap<Node, Double>();
+
+			for (Node connectedNode : distances.keySet()) {
+				String label = connectedNode.getLabel();
+				String[] nodeLabels = label.split(";");
+				if (nodeLabels[1].startsWith(Utility.FACILITY_NAME)) {
+					if (!distances.get(connectedNode).isInfinite()) {
+						connectedFacs.put(connectedNode, distances.get(connectedNode));
+					}
+				}
+			}
+
+			// Sort the facility nodes by order. The first element is the
+			// closest to the residential node.
+			// Only add the residential nodes that are connected to the network.
+			if (connectedFacs.size() != 0) {
+				connectedFacs = Utility.sortByValues(connectedFacs);
+				closestFacToResNodes.put(node, connectedFacs);
+			}
+		}
+		return closestFacToResNodes;
+	}
+
 	private static double CalculateWeight(HashMap<Node, HashMap<Node, Double>> closestFacToResNodes,
 			Double lowestWeight) {
 
 		double facWeight = 0.0;
-		// Get the weight of all facility nodes
-		// Loops through ll residential nodes
+
 		if (closestFacToResNodes.keySet() != null) {
 			for (Node resNode : closestFacToResNodes.keySet()) {
-				// gets a facility closest to res
-
 				HashMap<Node, Double> map = closestFacToResNodes.get(resNode);
 				for (Node facNode : map.keySet()) {
 					String[] nodeLabel = resNode.getLabel().split(";");
@@ -148,9 +162,19 @@ public class ReverseGreedy {
 		return facWeight;
 	}
 
-	private static HashMap<Node, Double> computeDistances(Graph graph, Node node) {
-		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(graph, node);
-		dspa.compute();
-		return dspa.getDistances();
+	private static HashMap<Node, HashMap<Node, Double>> copyHashMap(
+			HashMap<Node, HashMap<Node, Double>> closestFacToResNodes) {
+		HashMap<Node, HashMap<Node, Double>> tempFacToRes = new HashMap<Node, HashMap<Node, Double>>();
+
+		new HashMap<Node, HashMap<Node, Double>>();
+		tempFacToRes.clear();
+		for (Node node : closestFacToResNodes.keySet()) {
+			HashMap<Node, Double> tempFacNodes = new HashMap<Node, Double>();
+			for (Node tempNode : closestFacToResNodes.get(node).keySet()) {
+				tempFacNodes.put(tempNode, closestFacToResNodes.get(node).get(tempNode));
+			}
+			tempFacToRes.put(node, tempFacNodes);
+		}
+		return tempFacToRes;
 	}
 }
