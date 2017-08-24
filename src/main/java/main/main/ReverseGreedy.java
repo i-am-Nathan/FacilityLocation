@@ -52,7 +52,7 @@ public class ReverseGreedy {
 			lowestWeight = Double.MAX_VALUE;
 		
 			for (Node facNode : facNodes.keySet()) {
-
+				//Make a duplicate copy of closestFacToResNodes
 				HashMap<Node, HashMap<Node, Double>> tempFacToRes = Utility.copyHashMap(closestFacToResNodes);
 
 				for (Node resNode : tempFacToRes.keySet()) {
@@ -107,10 +107,13 @@ public class ReverseGreedy {
 			List<Node> resNodes) {
 		HashMap<Node,HashMap<Node,Double>> closestFacToResNodes = new HashMap<Node,HashMap<Node,Double>>();
 
+	
 		for (Node node : resNodes) {
+			//Using Dijkstra algorithm get the distances to all nodes relative the input node
 			HashMap<Node, Double> distances = Utility.computeDistances(wholeGraph, node);
 			HashMap<Node, Double> connectedFacs = new HashMap<Node, Double>();
 
+			//Filter it so that the distances only get the faciliy distances
 			for (Node connectedNode : distances.keySet()) {
 				String label = connectedNode.getLabel();
 				String[] nodeLabels = label.split(";");
@@ -138,8 +141,10 @@ public class ReverseGreedy {
 		double facWeight = 0.0;
 
 		if (closestFacToResNodes.keySet() != null) {
+			//Loop through all the resNodes and find the facility that it is the closest to it
 			for (Node resNode : closestFacToResNodes.keySet()) {
 				HashMap<Node, Double> map = closestFacToResNodes.get(resNode);
+				//Since the map is sorted the first element is the closest
 				for (Node facNode : map.keySet()) {
 					String[] nodeLabel = resNode.getLabel().split(";");
 					double popScore = Utility.CalculatePopulationScore(nodeLabel[2], Float.valueOf(nodeLabel[5]));
