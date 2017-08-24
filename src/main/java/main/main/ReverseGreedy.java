@@ -16,14 +16,11 @@ import org.openide.util.Lookup;
 public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
 	public static List<Node> Search(int facCount, Graph wholeGraph, boolean withEuclidDistance) {
+		long startTime = System.currentTimeMillis();
 
 		HashMap<Node, Double> facNodes = new HashMap<Node, Double>();
 		List<Node> resNodes = new ArrayList<Node>();
-		
-		AttributeColumnsController attributeColumnsController = Lookup.getDefault().lookup(AttributeColumnsController.class);
-		Table edgeTable = wholeGraph.getModel().getEdgeTable();
-		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
-
+	
 		//Filter the wholeGraph into facNodes and resNodes
 		for (Node node : wholeGraph.getNodes()) {
 			String label = node.getLabel();
@@ -53,8 +50,7 @@ public class ReverseGreedy {
 		 */
 		while (facNodes.size() != facCount) {
 			lowestWeight = Double.MAX_VALUE;
-
-			
+		
 			for (Node facNode : facNodes.keySet()) {
 
 				HashMap<Node, HashMap<Node, Double>> tempFacToRes = Utility.copyHashMap(closestFacToResNodes);
@@ -83,10 +79,13 @@ public class ReverseGreedy {
 				closestFacToResNodes.put(node, currentBestSet.get(node));
 			}
 			facNodes.remove(removeNode);
-			System.out.printf("NEW WEIGHT: %.0f\n", lowestWeight);
 			System.out.println("Nodes left: "+ facNodes.size());
 		}
 		List<Node> result = new ArrayList<Node>(facNodes.keySet());
+		
+		long endTime   = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		System.out.println("Time taken for Reverse Greedy: " + totalTime/1000);
 
 		return result;
 	}

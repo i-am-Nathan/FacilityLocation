@@ -55,6 +55,11 @@ public class Input {
 
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
         UndirectedGraph graph = graphModel.getUndirectedGraph();
+        
+		AttributeColumnsController attributeColumnsController = Lookup.getDefault().lookup(AttributeColumnsController.class);
+		Table edgeTable = graph.getModel().getEdgeTable();
+		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
+
 
         return graph;
     }
