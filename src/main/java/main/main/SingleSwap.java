@@ -6,15 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.mysql.jdbc.Util;
+import it.unimi.dsi.fastutil.Hash;
 import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
 import org.gephi.datalab.api.AttributeColumnsController;
+import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Table;
 import org.gephi.graph.api.UndirectedGraph;
 import org.openide.util.Lookup;
 
 public class SingleSwap {
-	public List<Node> Search(UndirectedGraph graph, int facCount){
+	public List<Node> Search(UndirectedGraph graph, int facCount, boolean useEuclidean){
 		
 		//Initial K
 		List<List<Node>> nodeLists = Utility.findInitialK(graph, facCount, 75, "Eigenvector Centrality");
@@ -34,15 +36,27 @@ public class SingleSwap {
 		Table edgeTable = graph.getModel().getEdgeTable();
 		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
 
-		for (Node n: swapNodes){
-			HashMap<Node, Double> distances = Utility.computeDistances(graph, n);
+		if(useEuclidean){
+			for(Node swapNode: swapNodes){
+				HashMap<Node, Double> distances = createEuclideanSet(graph, swapNode);
+				for (Node targetNode: distances.keySet()){
+					if (targetNode.getLabel().contains(Utility.RESIDENTIAL_NAME)) {
+						HashMap<Node, Double> currentFacDist = resNodes.getOrDefault(targetNode, new HashMap<>());
+						currentFacDist.put(swapNode, distances.get(targetNode));
+ 						resNodes.put(targetNode, currentFacDist);
+					}
+				}
+			}
+		} else {
+			for (Node swapNode: swapNodes){
+				HashMap<Node, Double> distances = Utility.computeDistances(graph, swapNode);
 
-			for(Node targetNode: distances.keySet()){
-				if(targetNode.getLabel().contains("Residential")){
-					HashMap<Node, Double> currentFacDist = resNodes.get(targetNode);
-					if(currentFacDist == null) currentFacDist = new HashMap<>();
-					currentFacDist.put(n, distances.get(targetNode));
-					resNodes.put(targetNode, currentFacDist);
+				for(Node targetNode: distances.keySet()){
+					if(targetNode.getLabel().contains(Utility.RESIDENTIAL_NAME)){
+						HashMap<Node, Double> currentFacDist = resNodes.getOrDefault(targetNode, new HashMap<>());
+						currentFacDist.put(swapNode, distances.get(targetNode));
+						resNodes.put(targetNode, currentFacDist);
+					}
 				}
 			}
 		}
@@ -57,7 +71,10 @@ public class SingleSwap {
 					continue;
 				}
 
-				HashMap<Node, Double> distances = Utility.computeDistances(graph, swapInNode);
+				HashMap<Node, Double> distances;
+				if(useEuclidean) distances = createEuclideanSet(graph, swapInNode);
+				else distances = Utility.computeDistances(graph, swapInNode);
+
 				HashMap<Node, Double> replacedSetScore = new HashMap<>();
 				List<SetScore> betterScores = new ArrayList<>();
 				for(Node swapOutNode: swapNodes){
@@ -124,6 +141,14 @@ public class SingleSwap {
 		}
 
 		return score;
+	}
+
+	private HashMap<Node, Double> createEuclideanSet(Graph graph, Node swapNode){
+		HashMap<Node, Double> euclideanSet = new HashMap<>();
+		for(Node n: graph.getNodes()){
+			euclideanSet.put(n, Utility.euclidDistance(swapNode, n));
+		}
+		return euclideanSet;
 	}
 }
 
