@@ -1,9 +1,6 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import com.mysql.jdbc.Util;
 import it.unimi.dsi.fastutil.Hash;
@@ -16,11 +13,8 @@ import org.gephi.graph.api.UndirectedGraph;
 import org.openide.util.Lookup;
 
 public class SingleSwap {
-	public List<Node> Search(UndirectedGraph graph, int facCount, boolean useEuclidean){
-
-		//Initial K
-		List<List<Node>> nodeLists = Utility.findInitialK(graph, facCount, 75, "Eigenvector Centrality");
-		List<Node> swapNodes = nodeLists.get(nodeLists.size()-1);
+	public List<Node> Search(UndirectedGraph graph, int facCount, boolean useEuclidean, boolean useClustering){
+		List<Node> swapNodes = new ArrayList<>();
 
 		//Swap
 		List<Node> facNodes = new ArrayList<>();
@@ -31,6 +25,16 @@ public class SingleSwap {
 				facNodes.add(node);
 			}
 		}
+		//Initial K
+		if(useClustering){
+			List<List<Node>> nodeLists = Utility.findInitialK(graph, facCount, 75, "Eigenvector Centrality");
+			swapNodes = nodeLists.get(nodeLists.size()-1);
+		} else {
+			Random rand = new Random();
+			for(int index = 0; index < facCount; index++){
+				swapNodes.add(facNodes.get(rand.nextInt(facNodes.size()-1)));
+			}
+		}
 
 		AttributeColumnsController attributeColumnsController = Lookup.getDefault().lookup(AttributeColumnsController.class);
 		Table edgeTable = graph.getModel().getEdgeTable();
@@ -39,7 +43,7 @@ public class SingleSwap {
 
 		for (Node swapNode: swapNodes){
 			HashMap<Node, Double> distances;
-			if(useEuclidean) distances = createEuclideanSet(graph, swapNode);
+			if(useEuclidean) distances = Utility.createEuclideanSet(graph, swapNode);
 			else distances = Utility.computeDistances(graph, swapNode);
 
 			for(Node targetNode: distances.keySet()){
@@ -51,16 +55,17 @@ public class SingleSwap {
 			}
 		}
 
-		double bestScore = calculateSetScore(resNodes);
+		double bestScore = calculateSetScore(resNodes, Double.MAX_VALUE);
 		double oldScore = 0;
 
+		long startTime = System.currentTimeMillis();
 		while (oldScore != bestScore){
 			oldScore = bestScore;
 			for(Node swapInNode: facNodes){
 				if(swapNodes.contains(swapInNode)) continue;
 
 				HashMap<Node, Double> distances;
-				if(useEuclidean) distances = createEuclideanSet(graph, swapInNode);
+				if(useEuclidean) distances = Utility.createEuclideanSet(graph, swapInNode);
 				else distances = Utility.computeDistances(graph, swapInNode);
 
 				SetScore bestScoreSet = null;
@@ -72,7 +77,7 @@ public class SingleSwap {
 						facilityDistance.put(swapInNode, distances.get(targetNode));
 						facilityDistance.remove(swapOutNode);
 					}
-					double tempScore = calculateSetScore(tempDistances);
+					double tempScore = calculateSetScore(tempDistances, bestScore);
 
 					if(tempScore < bestScore){
 						bestScore = tempScore;
@@ -83,12 +88,15 @@ public class SingleSwap {
 					swapNodes.remove(bestScoreSet.swapOutNode);
 					swapNodes.add(bestScoreSet.swapInNode);
 					resNodes = bestScoreSet.resultingSet;
+//					System.out.printf("Best Score: %f\n",bestScore);
+//					System.out.println("\n####");
 				}
-				System.out.printf("Best Score: %f\n",bestScore);
-				System.out.println("\n####");
 			}
 //			System.out.println("\n### The best score for this round is: "+bestScore+"\n");
 		}
+		long endTime = System.currentTimeMillis();
+		System.out.println("Time: "+(endTime-startTime));
+
 
 		List<Node> selectedNodes = new ArrayList<>(swapNodes);
 
@@ -111,7 +119,7 @@ public class SingleSwap {
 		}
 	}
 
-	public double calculateSetScore(HashMap<Node, HashMap<Node, Double>> distancesToFacs){
+	public double calculateSetScore(HashMap<Node, HashMap<Node, Double>> distancesToFacs, double currentBestScore){
 		double minimumDistance;
 		double score = 0;
 
@@ -120,17 +128,12 @@ public class SingleSwap {
 			minimumDistance = Collections.min(distancesToFacs.get(resNode).values());
 			if(Double.isFinite(minimumDistance))
 				score += Utility.CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5])) * minimumDistance;
+			if(score > currentBestScore) return Double.MAX_VALUE;
 		}
+
+
 
 		return score;
-	}
-
-	private HashMap<Node, Double> createEuclideanSet(Graph graph, Node swapNode){
-		HashMap<Node, Double> euclideanSet = new HashMap<>();
-		for(Node n: graph.getNodes()){
-			euclideanSet.put(n, Utility.euclidDistance(swapNode, n));
-		}
-		return euclideanSet;
 	}
 }
 

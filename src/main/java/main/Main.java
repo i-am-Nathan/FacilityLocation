@@ -23,7 +23,7 @@ public class Main {
 
 		Input i = new Input();
 
-		Graph graph = i.importGraph("200m.gml");
+		Graph graph = i.importGraph("500m.gml");
 
 //		i.setXY((UndirectedGraph)graph);
 //
@@ -54,15 +54,16 @@ public class Main {
 //		}
 
 		SingleSwap ss = new SingleSwap();
-		List<Node> result = ss.Search((UndirectedGraph)graph,3, true);
+		boolean useEuclidean = false;
+		List<Node> result = ss.Search((UndirectedGraph)graph,10, useEuclidean, true);
 
-		System.out.printf("THE RESULTING SCORE FOR SINGLE SWAP IS: %f\n",Utility.calculateFinalScore(graph, result));
+		System.out.printf("THE RESULTING SCORE FOR SINGLE SWAP IS: %f\n",Utility.calculateFinalScore(graph, result, useEuclidean));
 
 
-//		List<Node> rgresult = ReverseGreedy.Search(3, graph, false);
+//		List<Node> rgresult = ReverseGreedy.Search(3, graph, true);
 //
-//		System.out.printf("THE RESULTING SCORE FOR REVERSE GREEDY IS: %f\n",Utility.calculateFinalScore(graph, rgresult));
-
+//		System.out.printf("THE RESULTING SCORE FOR REVERSE GREEDY IS: %f\n",Utility.calculateFinalScore(graph, rgresult, true));
+//
 //		Output o = new Output();
 //		o.export(rgresult);
 	}

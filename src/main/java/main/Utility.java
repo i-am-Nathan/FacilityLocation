@@ -236,11 +236,22 @@ public class Utility {
 		return (area/density);
 	}
 
-	public static double calculateFinalScore(Graph wholeGraph, List<Node> nodeList){
+	public static HashMap<Node, Double> createEuclideanSet(Graph graph, Node swapNode){
+		HashMap<Node, Double> euclideanSet = new HashMap<>();
+		for(Node n: graph.getNodes()){
+			euclideanSet.put(n, Utility.euclidDistance(swapNode, n));
+		}
+		return euclideanSet;
+	}
+
+	public static double calculateFinalScore(Graph wholeGraph, List<Node> nodeList, boolean useEuclidean){
 		double score = 0;
 		HashMap<Node, HashMap<Node, Double>> distancesToResNodes = new HashMap<>();
 		for(Node n: nodeList){
-			HashMap<Node, Double> distances = Utility.computeDistances(wholeGraph, n);
+			HashMap<Node, Double> distances;
+			if(useEuclidean) distances = Utility.createEuclideanSet(wholeGraph, n);
+			else distances = Utility.computeDistances(wholeGraph, n);
+
 			for(Node targetNode: distances.keySet()){
 				if(targetNode.getLabel().contains("Residential")){
 					HashMap<Node, Double> currentFacDist = distancesToResNodes.get(targetNode);
