@@ -17,7 +17,7 @@ import org.openide.util.Lookup;
 
 public class SingleSwap {
 	public List<Node> Search(UndirectedGraph graph, int facCount, boolean useEuclidean){
-		
+
 		//Initial K
 		List<List<Node>> nodeLists = Utility.findInitialK(graph, facCount, 75, "Eigenvector Centrality");
 		List<Node> swapNodes = nodeLists.get(nodeLists.size()-1);
@@ -36,27 +36,17 @@ public class SingleSwap {
 		Table edgeTable = graph.getModel().getEdgeTable();
 		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
 
-		if(useEuclidean){
-			for(Node swapNode: swapNodes){
-				HashMap<Node, Double> distances = createEuclideanSet(graph, swapNode);
-				for (Node targetNode: distances.keySet()){
-					if (targetNode.getLabel().contains(Utility.RESIDENTIAL_NAME)) {
-						HashMap<Node, Double> currentFacDist = resNodes.getOrDefault(targetNode, new HashMap<>());
-						currentFacDist.put(swapNode, distances.get(targetNode));
- 						resNodes.put(targetNode, currentFacDist);
-					}
-				}
-			}
-		} else {
-			for (Node swapNode: swapNodes){
-				HashMap<Node, Double> distances = Utility.computeDistances(graph, swapNode);
 
-				for(Node targetNode: distances.keySet()){
-					if(targetNode.getLabel().contains(Utility.RESIDENTIAL_NAME)){
-						HashMap<Node, Double> currentFacDist = resNodes.getOrDefault(targetNode, new HashMap<>());
-						currentFacDist.put(swapNode, distances.get(targetNode));
-						resNodes.put(targetNode, currentFacDist);
-					}
+		for (Node swapNode: swapNodes){
+			HashMap<Node, Double> distances;
+			if(useEuclidean) distances = createEuclideanSet(graph, swapNode);
+			else distances = Utility.computeDistances(graph, swapNode);
+
+			for(Node targetNode: distances.keySet()){
+				if(targetNode.getLabel().contains(Utility.RESIDENTIAL_NAME)){
+					HashMap<Node, Double> currentFacDist = resNodes.getOrDefault(targetNode, new HashMap<>());
+					currentFacDist.put(swapNode, distances.get(targetNode));
+					resNodes.put(targetNode, currentFacDist);
 				}
 			}
 		}
@@ -67,16 +57,14 @@ public class SingleSwap {
 		while (oldScore != bestScore){
 			oldScore = bestScore;
 			for(Node swapInNode: facNodes){
-				if(swapNodes.contains(swapInNode)) {
-					continue;
-				}
+				if(swapNodes.contains(swapInNode)) continue;
 
 				HashMap<Node, Double> distances;
 				if(useEuclidean) distances = createEuclideanSet(graph, swapInNode);
 				else distances = Utility.computeDistances(graph, swapInNode);
 
-				HashMap<Node, Double> replacedSetScore = new HashMap<>();
-				List<SetScore> betterScores = new ArrayList<>();
+				SetScore bestScoreSet = null;
+
 				for(Node swapOutNode: swapNodes){
 					HashMap<Node, HashMap<Node, Double>> tempDistances = Utility.copyHashMap(resNodes);
 					for(Node targetNode: tempDistances.keySet()){
@@ -87,30 +75,24 @@ public class SingleSwap {
 					double tempScore = calculateSetScore(tempDistances);
 
 					if(tempScore < bestScore){
-						SetScore betterScore = new SetScore(swapInNode, swapOutNode, tempScore, tempDistances);
-						betterScores.add(betterScore);
+						bestScore = tempScore;
+						bestScoreSet = new SetScore(swapInNode, swapOutNode, bestScore, tempDistances);
 					}
 				}
-				if(betterScores.size() > 0){
-					SetScore bestSet = null;
-					for(SetScore set: betterScores){
-						if(set.score < bestScore) {
-							bestScore = set.score;
-							bestSet = set;
-						}
-					}
-					swapNodes.remove(bestSet.swapOutNode);
-					swapNodes.add(bestSet.swapInNode);
-					resNodes = bestSet.resultingSet;
+				if(bestScoreSet != null){
+					swapNodes.remove(bestScoreSet.swapOutNode);
+					swapNodes.add(bestScoreSet.swapInNode);
+					resNodes = bestScoreSet.resultingSet;
 				}
+				System.out.printf("Best Score: %f\n",bestScore);
+				System.out.println("\n####");
 			}
 //			System.out.println("\n### The best score for this round is: "+bestScore+"\n");
 		}
 
 		List<Node> selectedNodes = new ArrayList<>(swapNodes);
-		for(Node n: selectedNodes){
-//			System.out.println("Node id "+n.getId().toString()+" "+n.getLabel());
-		}
+
+
 		return selectedNodes;
 
 	}
