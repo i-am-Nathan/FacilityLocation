@@ -3,9 +3,6 @@ package main;
 
 
 import org.gephi.datalab.api.AttributeColumnsController;
-import org.gephi.filters.api.FilterController;
-import org.gephi.filters.api.Query;
-import org.gephi.filters.plugin.attribute.AttributeEqualBuilder;
 import org.gephi.graph.api.*;
 import org.gephi.io.importer.api.Container;
 import org.gephi.io.importer.api.EdgeDirectionDefault;
@@ -17,11 +14,7 @@ import org.openide.util.Lookup;
 
 import java.io.*;
 import java.math.RoundingMode;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Juno on 4/07/2017.

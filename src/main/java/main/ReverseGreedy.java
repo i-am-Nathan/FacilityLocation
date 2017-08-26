@@ -6,12 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
-import org.gephi.datalab.api.AttributeColumnsController;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
-import org.gephi.graph.api.Table;
-import org.openide.util.Lookup;
 
 public class ReverseGreedy {
 	@SuppressWarnings("unchecked")

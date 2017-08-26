@@ -36,11 +36,6 @@ public class SingleSwap {
 			}
 		}
 
-		AttributeColumnsController attributeColumnsController = Lookup.getDefault().lookup(AttributeColumnsController.class);
-		Table edgeTable = graph.getModel().getEdgeTable();
-		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
-
-
 		for (Node swapNode: swapNodes){
 			HashMap<Node, Double> distances;
 			if(useEuclidean) distances = Utility.createEuclideanSet(graph, swapNode);

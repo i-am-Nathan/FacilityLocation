@@ -2,15 +2,9 @@ package main;
 
 import java.util.*;
 
-import org.apache.xalan.templates.OutputProperties;
-import org.gephi.graph.api.Column;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.UndirectedGraph;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleWeightedGraph;
-import org.omg.CORBA.UNKNOWN;
-import sun.text.resources.et.CollationData_et;
 
 public class Main {
 	public static UndirectedGraph _importedGraph;
