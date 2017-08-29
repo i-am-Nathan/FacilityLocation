@@ -90,7 +90,7 @@ public class Utility {
 		modularity.setRandom(true);
 
 		float totalCoverage = 0;
-		int resolution = 1;
+		double resolution = 1;
 		Column classColumn = null;
 		Object[] percentages = null;
 
@@ -100,9 +100,25 @@ public class Utility {
 			modularity.execute(cleanGraph);
 
 			classColumn = cleanGraph.getModel().getNodeTable().getColumn(Modularity.MODULARITY_CLASS);
+
 			Function func2 = appearanceModel.getNodeFunction(graph, classColumn,
 					PartitionElementColorTransformer.class);
 			Partition partition2 = ((PartitionFunction) func2).getPartition();
+
+			while (k > partition2.size()){
+				resolution /= 2;
+				modularity.setResolution(resolution);
+				modularity.execute(cleanGraph);
+
+				classColumn = cleanGraph.getModel().getNodeTable().getColumn(Modularity.MODULARITY_CLASS);
+
+				func2 = appearanceModel.getNodeFunction(graph, classColumn,
+						PartitionElementColorTransformer.class);
+				partition2 = ((PartitionFunction) func2).getPartition();
+				System.out.println(partition2.size());
+
+			}
+
 //			System.out.println(partition2.size() + " communities found");
 			percentages = partition2.getSortedValues().toArray();
 
