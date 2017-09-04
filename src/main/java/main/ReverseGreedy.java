@@ -12,8 +12,6 @@ import org.gephi.graph.api.Node;
 public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
 	public static List<Node> Search(int facCount, Graph wholeGraph, boolean withEuclidDistance) {
-		long startTime = System.currentTimeMillis();
-
 		HashMap<Node, Double> facNodes = new HashMap<Node, Double>();
 		List<Node> resNodes = new ArrayList<Node>();
 	
@@ -79,9 +77,6 @@ public class ReverseGreedy {
 		}
 		List<Node> result = new ArrayList<Node>(facNodes.keySet());
 		
-		long endTime   = System.currentTimeMillis();
-		long totalTime = endTime - startTime;
-		System.out.println("Time taken for Reverse Greedy: " + totalTime/1000);
 
 		return result;
 	}

@@ -1,6 +1,7 @@
 package main;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
@@ -14,10 +15,6 @@ public class Main {
 
 	public static void main(String[] args){
 
-
-		Input i = new Input();
-
-		Graph graph = i.importGraph("500m.gml");
 
 //		i.setXY((UndirectedGraph)graph);
 //
@@ -41,24 +38,36 @@ public class Main {
 //		}
 //		System.out.println("ALGORITHM COMPLETE, TOTAL COST IS: " + weight);
 //
-//		Output output = new Output();
 //
 //		for (List<org.gephi.graph.api.Node> nodeList :Utility.findInitialK(graph, 3,75,"Eigenvector Centrality")) {
 //			output.export(nodeList);
 //		}
+//
+
+		Input i = new Input();
+
+		Graph graph = i.importGraph("300m.gml");
 
 		SingleSwap ss = new SingleSwap();
-		boolean useEuclidean = false;
-		List<Node> result = ss.Search((UndirectedGraph)graph,10, useEuclidean, true);
-
-		System.out.printf("THE RESULTING SCORE FOR SINGLE SWAP IS: %f\n",Utility.calculateFinalScore(graph, result, useEuclidean));
-
-
-//		List<Node> rgresult = ReverseGreedy.Search(3, graph, true);
+//		boolean useEuclidean = false;
+//		List<Node> result = ss.Search((UndirectedGraph)graph,1, useEuclidean, true);
 //
-//		System.out.printf("THE RESULTING SCORE FOR REVERSE GREEDY IS: %f\n",Utility.calculateFinalScore(graph, rgresult, true));
-//
-//		Output o = new Output();
-//		o.export(rgresult);
-	}
+//		System.out.printf("THE RESULTING SCORE FOR SINGLE SWAP IS: %f\n",Utility.calculateFinalScore(graph, result, useEuclidean));
+		int facCount = 18;
+
+		long startTime = System.currentTimeMillis();
+//		List<Node> rgresult = ReverseGreedy.Search(facCount, graph, true);
+		List<Node> rgresult = ss.Search((UndirectedGraph)graph,facCount, false, true);
+		long endTime   = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		long minutes = (totalTime / 1000) / 60;
+		long seconds = (totalTime / 1000) % 60;
+
+		System.out.println("Time taken for Single Swap (non-Clustering, non-Euclidean) and "+facCount+" facilities: " + totalTime +" ("+minutes+":"+seconds+")");
+
+		System.out.printf("THE RESULTING SCORE FOR SINGLE SWAP IS: %f\n",Utility.calculateFinalScore(graph, rgresult, false));
+
+		Output output = new Output();
+		output.export(rgresult);
+ 	}
 }
