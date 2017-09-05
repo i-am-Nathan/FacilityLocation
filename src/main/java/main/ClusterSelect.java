@@ -26,7 +26,9 @@ public class ClusterSelect {
                 communityNodes.add(n);
                 if(n.getLabel().contains(Utility.FACILITY_NAME)){
                     double tempCost = 0;
-                    HashMap<Node, Double> distances = Utility.computeDistances(graph, n);
+                    HashMap<Node, Double> distances;
+                    if(useEuclidean) distances = Utility.createEuclideanSet(graph, n);
+                    else distances = Utility.computeDistances(graph, n);
 
                     for(Node targetNode: communitySubgraph.getNodes()){
                         String[] nodeLabels = targetNode.getLabel().split(";");
