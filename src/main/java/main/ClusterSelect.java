@@ -1,6 +1,5 @@
 package main;
 
-import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Subgraph;
@@ -26,18 +25,19 @@ public class ClusterSelect {
                 communityNodes.add(n);
                 if(n.getLabel().contains(Utility.FACILITY_NAME)){
                     double tempCost = 0;
-                    HashMap<Node, Double> distances;
-                    if(useEuclidean) distances = Utility.createEuclideanSet(graph, n);
-                    else distances = Utility.computeDistances(graph, n);
+                    HashMap<Node, Double> distances = Utility.createDistanceMap(graph, n, useEuclidean);
 
+                    //Had to manually calculate score as using the utility version calculates score based on entire graph
                     for(Node targetNode: communitySubgraph.getNodes()){
                         String[] nodeLabels = targetNode.getLabel().split(";");
                         if(nodeLabels[3].contains(Utility.RESIDENTIAL_NAME)){
-                            double popScore = Utility.CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5]));
+                            double popScore = Utility.calculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5]));
                             double distance = distances.get(targetNode);
                             if(Double.isFinite(distance) && Double.isFinite(popScore))
                                 tempCost += popScore * distance;
-
+                            if(tempCost > bestCost){
+                                break;
+                            }
                         }
                     }
 

@@ -101,7 +101,7 @@ public class ReverseGreedy {
 	
 		for (Node node : resNodes) {
 			//Using Dijkstra algorithm get the distances to all nodes relative the input node
-			HashMap<Node, Double> distances = Utility.computeDistances(wholeGraph, node);
+			HashMap<Node, Double> distances = Utility.createNetworkSet(wholeGraph, node);
 			HashMap<Node, Double> connectedFacs = new HashMap<Node, Double>();
 
 			//Filter it so that the distances only get the faciliy distances
@@ -138,7 +138,7 @@ public class ReverseGreedy {
 				//Since the map is sorted the first element is the closest
 				for (Node facNode : map.keySet()) {
 					String[] nodeLabel = resNode.getLabel().split(";");
-					double popScore = Utility.CalculatePopulationScore(nodeLabel[2], Float.valueOf(nodeLabel[5]));
+					double popScore = Utility.calculatePopulationScore(nodeLabel[2], Float.valueOf(nodeLabel[5]));
 
 					facWeight = facWeight + (map.get(facNode).doubleValue() * popScore);
 

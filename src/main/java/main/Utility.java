@@ -11,7 +11,6 @@ import java.util.Iterator;
 import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
 import org.gephi.appearance.api.*;
 import org.gephi.appearance.plugin.PartitionElementColorTransformer;
-import org.gephi.datalab.api.AttributeColumnsController;
 import org.gephi.filters.api.FilterController;
 import org.gephi.filters.api.Query;
 import org.gephi.filters.plugin.graph.GiantComponentBuilder;
@@ -189,10 +188,24 @@ public class Utility {
 	}
 	
 	//Uses dijkstra algorithm and finds the distance of the whole graph relative to the node
-	public static HashMap<Node, Double> computeDistances(Graph wholeGraph, Node node){
-		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(wholeGraph, node);
+	public static HashMap<Node, Double> createNetworkSet(Graph graph, Node node){
+		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(graph, node);
 		dspa.compute();
 		return dspa.getDistances();
+	}
+
+	private static HashMap<Node, Double> createEuclideanSet(Graph graph, Node node){
+		HashMap<Node, Double> euclideanSet = new HashMap<>();
+		for(Node n: graph.getNodes()){
+			euclideanSet.put(n, Utility.euclidDistance(node, n));
+		}
+		return euclideanSet;
+	}
+
+	public static HashMap<Node, Double> createDistanceMap(Graph graph, Node node, boolean useEuclidean){
+		if(useEuclidean) return createEuclideanSet(graph, node);
+		else return createNetworkSet(graph, node);
+
 	}
 
 	public static HashMap<Node, HashMap<Node, Double>> copyHashMap(
@@ -211,7 +224,7 @@ public class Utility {
 		return tempFacToRes;
 	}
 
-	public static double CalculatePopulationScore(String zone, float area){
+	public static double calculatePopulationScore(String zone, float area){
 		int density;
 		switch (zone) {
 			case "1":
@@ -258,24 +271,14 @@ public class Utility {
 		return (area/density);
 	}
 
-	public static HashMap<Node, Double> createEuclideanSet(Graph graph, Node swapNode){
-		HashMap<Node, Double> euclideanSet = new HashMap<>();
-		for(Node n: graph.getNodes()){
-			euclideanSet.put(n, Utility.euclidDistance(swapNode, n));
-		}
-		return euclideanSet;
-	}
-
 	public static double calculateFinalScore(Graph wholeGraph, List<Node> nodeList, boolean useEuclidean){
 		double score = 0;
 		HashMap<Node, HashMap<Node, Double>> distancesToResNodes = new HashMap<>();
 		for(Node n: nodeList){
-			HashMap<Node, Double> distances;
-			if(useEuclidean) distances = Utility.createEuclideanSet(wholeGraph, n);
-			else distances = Utility.computeDistances(wholeGraph, n);
-
+			HashMap<Node, Double> distances = createDistanceMap(wholeGraph, n, useEuclidean);
 			for(Node targetNode: distances.keySet()){
-				if(targetNode.getLabel().contains("Residential")){
+				String[] targetNodeLabels = targetNode.getLabel().split(";");
+				if(targetNodeLabels[1].startsWith(RESIDENTIAL_NAME)){
 					HashMap<Node, Double> currentFacDist = distancesToResNodes.get(targetNode);
 					if(currentFacDist == null) currentFacDist = new HashMap<>();
 					currentFacDist.put(n, distances.get(targetNode));
@@ -288,10 +291,8 @@ public class Utility {
 			String[] nodeLabels = resNode.getLabel().split(";");
 			minimumDistance = Collections.min(distancesToResNodes.get(resNode).values());
 			if(Double.isFinite(minimumDistance))
-				score += Utility.CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5])) * minimumDistance;
+				score += Utility.calculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5])) * minimumDistance;
 		}
 		return score;
 	}
-
-
 }

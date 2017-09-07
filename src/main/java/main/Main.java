@@ -48,28 +48,39 @@ public class Main {
 
 		Graph graph = i.importGraph("300m.gml");
 
-		SingleSwap ss = new SingleSwap();
-//		boolean useEuclidean = false;
-//		List<Node> result = ss.Search((UndirectedGraph)graph,1, useEuclidean, true);
-//
-//		System.out.printf("THE RESULTING SCORE FOR SINGLE SWAP IS: %f\n",Utility.calculateFinalScore(graph, result, useEuclidean));
+//		SingleSwap ss = new SingleSwap();
+		boolean useEuclidean = true;
 		int facCount = 3;
 
-		long startTime = System.currentTimeMillis();
+//		List<Node> result = ss.Search((UndirectedGraph)graph, facCount, useEuclidean, false);
+//
+//		System.out.printf("THE RESULTING SCORE FOR SINGLE SWAP IS: %f\n",Utility.calculateFinalScore(graph, result, useEuclidean));
+
 //		List<Node> rgresult = ReverseGreedy.Search(facCount, graph, true);
 //		List<Node> rgresult = ss.Search((UndirectedGraph)graph,facCount, false, true);
-//		long endTime   = System.currentTimeMillis();
-//		long totalTime = endTime - startTime;
-//		long minutes = (totalTime / 1000) / 60;
-//		long seconds = (totalTime / 1000) % 60;
 //
-//		System.out.println("Time taken for Single Swap (non-Clustering, non-Euclidean) and "+facCount+" facilities: " + totalTime +" ("+minutes+":"+seconds+")");
-//
-//		System.out.printf("THE RESULTING SCORE FOR SINGLE SWAP IS: %f\n",Utility.calculateFinalScore(graph, rgresult, false));
-		ClusterSelect cs = new ClusterSelect();
-		List<Node> result = cs.Search(graph, facCount, 75, false);
+//		ClusterSelect cs = new ClusterSelect();
+//		List<List<Node>> result = cs.Search(graph, facCount, 75, false);
 
-		Output output = new Output();
-		output.export(result);
- 	}
+
+		long startTime = System.currentTimeMillis();
+		ClusterSingleSwap css = new ClusterSingleSwap();
+		List<List<Node>> result = css.Search(graph, facCount, 75, useEuclidean);
+		long endTime   = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		long minutes = (totalTime / 1000) / 60;
+		long seconds = (totalTime / 1000) % 60;
+
+		System.out.println("Time taken for Cluster Swap and "+facCount+" facilities: " + totalTime +" ("+minutes+":"+seconds+")");
+
+
+		List<Node> rgresult = result.get(result.size()-1);
+
+		System.out.printf("THE RESULTING SCORE FOR single SWAP IS: %f\n",Utility.calculateFinalScore(graph, rgresult, false));
+
+//		Output output = new Output();
+//		for(List<Node> nl: result){
+//			output.export(nl, "ClusterSwap");
+//		}
+	}
 }

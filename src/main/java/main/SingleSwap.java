@@ -2,15 +2,8 @@ package main;
 
 import java.util.*;
 
-import com.mysql.jdbc.Util;
-import it.unimi.dsi.fastutil.Hash;
-import org.gephi.algorithms.shortestpath.DijkstraShortestPathAlgorithm;
-import org.gephi.datalab.api.AttributeColumnsController;
-import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
-import org.gephi.graph.api.Table;
 import org.gephi.graph.api.UndirectedGraph;
-import org.openide.util.Lookup;
 
 public class SingleSwap {
 	public List<Node> Search(UndirectedGraph graph, int facCount, boolean useEuclidean, boolean useClustering){
@@ -21,7 +14,7 @@ public class SingleSwap {
 		HashMap<Node, HashMap<Node, Double>> resNodes = new HashMap<>();
 
 		for(Node node : graph.getNodes()){
-			if(node.getLabel().contains("Business")){
+			if(node.getLabel().contains(Utility.FACILITY_NAME)){
 				facNodes.add(node);
 			}
 		}
@@ -37,9 +30,7 @@ public class SingleSwap {
 		}
 
 		for (Node swapNode: swapNodes){
-			HashMap<Node, Double> distances;
-			if(useEuclidean) distances = Utility.createEuclideanSet(graph, swapNode);
-			else distances = Utility.computeDistances(graph, swapNode);
+			HashMap<Node, Double> distances = Utility.createDistanceMap(graph, swapNode, useEuclidean);
 
 			for(Node targetNode: distances.keySet()){
 				if(targetNode.getLabel().contains(Utility.RESIDENTIAL_NAME)){
@@ -59,9 +50,7 @@ public class SingleSwap {
 			for(Node swapInNode: facNodes){
 				if(swapNodes.contains(swapInNode)) continue;
 
-				HashMap<Node, Double> distances;
-				if(useEuclidean) distances = Utility.createEuclideanSet(graph, swapInNode);
-				else distances = Utility.computeDistances(graph, swapInNode);
+				HashMap<Node, Double> distances = Utility.createDistanceMap(graph, swapInNode, useEuclidean);
 
 				SetScore bestScoreSet = null;
 
@@ -122,7 +111,7 @@ public class SingleSwap {
 			String[] nodeLabels = resNode.getLabel().split(";");
 			minimumDistance = Collections.min(distancesToFacs.get(resNode).values());
 			if(Double.isFinite(minimumDistance))
-				score += Utility.CalculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5])) * minimumDistance;
+				score += Utility.calculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5])) * minimumDistance;
 			if(score > currentBestScore) return Double.MAX_VALUE;
 		}
 

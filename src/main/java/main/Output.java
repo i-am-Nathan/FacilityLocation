@@ -19,7 +19,7 @@ import java.util.List;
 public class Output {
 
 	//Create a csv file containing information from the given nodeList
-    public void export(List<Node> nodeList){
+    public void export(List<Node> nodeList, String tag){
         FileWriter writer = null;
         BufferedReader br = null;
         String line;
@@ -30,7 +30,7 @@ public class Output {
 
         try {
             String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Timestamp(System.currentTimeMillis()));
-            writer = new FileWriter(timeStamp+".csv");
+            writer = new FileWriter(tag+"_"+timeStamp+".csv");
 
             for (Node n:nodeList) {
                 String[] nodeData = n.getLabel().split( ";");
