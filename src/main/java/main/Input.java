@@ -20,11 +20,10 @@ import java.text.DecimalFormat;
  * Created by Juno on 4/07/2017.
  */
 public class Input {
-    private ProjectController pc;
     private Workspace workspace;
 
     public Input(){
-        pc = Lookup.getDefault().lookup(ProjectController.class);
+        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         pc.newProject();
         workspace = pc.getCurrentWorkspace();
     }

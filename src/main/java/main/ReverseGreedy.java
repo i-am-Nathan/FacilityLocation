@@ -73,7 +73,7 @@ public class ReverseGreedy {
 				closestFacToResNodes.put(node, currentBestSet.get(node));
 			}
 			facNodes.remove(removeNode);
-			System.out.println("Nodes left: "+ facNodes.size());
+//			System.out.println("Nodes left: "+ facNodes.size());
 		}
 		List<Node> result = new ArrayList<Node>(facNodes.keySet());
 		
