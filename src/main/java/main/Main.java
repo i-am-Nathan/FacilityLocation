@@ -76,11 +76,13 @@ public class Main {
 
 		List<Node> rgresult = result.get(result.size()-1);
 
-		System.out.printf("THE RESULTING SCORE FOR single SWAP IS: %f\n",Utility.calculateFinalScore(graph, rgresult, false));
+		System.out.printf("THE RESULTING SCORE FOR single SWAP IS: %f\n",Utility.calculateFinalScore(graph, rgresult, useEuclidean));
 
-//		Output output = new Output();
+		Output output = new Output();
+////		output.export(result, "singleswap1node");
 //		for(List<Node> nl: result){
 //			output.export(nl, "ClusterSwap");
 //		}
+
 	}
 }
