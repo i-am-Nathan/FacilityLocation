@@ -2,11 +2,28 @@ package main;
 
 import java.util.*;
 
+import org.gephi.filters.api.FilterController;
+import org.gephi.filters.api.Query;
+import org.gephi.filters.plugin.graph.GiantComponentBuilder;
+import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphView;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.UndirectedGraph;
+import org.openide.util.Lookup;
 
 public class SingleSwap {
-	public List<Node> Search(UndirectedGraph graph, int facCount, boolean useEuclidean, boolean useClustering){
+	public List<Node> Search(Graph graph, int facCount, boolean useEuclidean, boolean useClustering){
+
+		if(!useClustering){
+			FilterController filterController = Lookup.getDefault().lookup(FilterController.class);
+
+			GiantComponentBuilder.GiantComponentFilter giantComponentFilter = new GiantComponentBuilder.GiantComponentFilter();
+			giantComponentFilter.init(graph);
+			Query query = filterController.createQuery(giantComponentFilter);
+			GraphView graphView = filterController.filter(query);
+			graph = graph.getModel().getUndirectedGraph(graphView);
+		}
+
 		List<Node> swapNodes = new ArrayList<>();
 
 		//Swap
@@ -44,7 +61,6 @@ public class SingleSwap {
 		double bestScore = calculateSetScore(resNodes, Double.MAX_VALUE);
 		double oldScore = 0;
 
-		long startTime = System.currentTimeMillis();
 		while (oldScore != bestScore){
 			oldScore = bestScore;
 			for(Node swapInNode: facNodes){
@@ -78,9 +94,6 @@ public class SingleSwap {
 			}
 //			System.out.println("\n### The best score for this round is: "+bestScore+"\n");
 		}
-		long endTime = System.currentTimeMillis();
-		System.out.println("Time: "+(endTime-startTime));
-
 
 		List<Node> selectedNodes = new ArrayList<>(swapNodes);
 
@@ -112,10 +125,8 @@ public class SingleSwap {
 			minimumDistance = Collections.min(distancesToFacs.get(resNode).values());
 			if(Double.isFinite(minimumDistance))
 				score += Utility.calculatePopulationScore(nodeLabels[2], Float.valueOf(nodeLabels[5])) * minimumDistance;
-			if(score > currentBestScore) return Double.MAX_VALUE;
+			if(score > currentBestScore) break;
 		}
-
-
 
 		return score;
 	}

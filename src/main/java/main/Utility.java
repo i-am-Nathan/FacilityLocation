@@ -230,6 +230,7 @@ public class Utility {
 			case "1":
 				density = 1200;
 				break;
+			case "2":
 			case "2A1":
 				density = 5000;
 				break;

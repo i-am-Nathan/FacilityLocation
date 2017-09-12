@@ -11,7 +11,9 @@ import org.gephi.graph.api.Node;
 
 public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
-	public static List<Node> Search(int facCount, Graph wholeGraph, boolean withEuclidDistance) {
+	public static List<Node> Search(int facCount, Graph wholeGraph, boolean useEuclidean) {
+		long startTime = System.currentTimeMillis();
+
 		HashMap<Node, Double> facNodes = new HashMap<Node, Double>();
 		List<Node> resNodes = new ArrayList<Node>();
 	
@@ -28,7 +30,7 @@ public class ReverseGreedy {
 
 		//Hashmap which represents <ResNode, HashMap<FacNode,DistanceFromFac>
 		HashMap<Node, HashMap<Node, Double>> closestFacToResNodes = null;
-		if(withEuclidDistance){
+		if(useEuclidean){
 			closestFacToResNodes = computeEuclidDistance(resNodes,facNodes);
 		}else {
 			closestFacToResNodes = computeDijkstraDistances(wholeGraph,resNodes);
@@ -46,6 +48,8 @@ public class ReverseGreedy {
 			lowestWeight = Double.MAX_VALUE;
 		
 			for (Node facNode : facNodes.keySet()) {
+				if(facNode.getStoreId()==1232)
+					System.out.println();
 				//Make a duplicate copy of closestFacToResNodes
 				HashMap<Node, HashMap<Node, Double>> tempFacToRes = Utility.copyHashMap(closestFacToResNodes);
 
@@ -73,7 +77,14 @@ public class ReverseGreedy {
 				closestFacToResNodes.put(node, currentBestSet.get(node));
 			}
 			facNodes.remove(removeNode);
-//			System.out.println("Nodes left: "+ facNodes.size());
+			long timeBeforeScore = System.currentTimeMillis();
+			System.out.printf("THE SCORE IS: %f\n", Utility.calculateFinalScore(wholeGraph, new ArrayList<>(facNodes.keySet()), useEuclidean));
+			long timeAfterScore = System.currentTimeMillis();
+			long totalTime = (timeAfterScore - startTime) - (timeAfterScore - timeBeforeScore);
+			long minutes = (totalTime / 1000) / 60;
+			long seconds = (totalTime / 1000) % 60;
+			System.out.println("Time taken for Reverse Greedy and " + facNodes.size() + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")\n################\n\n");
+
 		}
 		List<Node> result = new ArrayList<Node>(facNodes.keySet());
 		
@@ -104,7 +115,7 @@ public class ReverseGreedy {
 			HashMap<Node, Double> distances = Utility.createNetworkSet(wholeGraph, node);
 			HashMap<Node, Double> connectedFacs = new HashMap<Node, Double>();
 
-			//Filter it so that the distances only get the faciliy distances
+			//Filter it so that the distances only get the facility distances
 			for (Node connectedNode : distances.keySet()) {
 				String label = connectedNode.getLabel();
 				String[] nodeLabels = label.split(";");

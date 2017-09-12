@@ -14,19 +14,27 @@ public class ClusterSingleSwap {
         List<List<Node>> nodeLists = new ArrayList<>();
         List<Subgraph> communitySubgraphs = Utility.findModularityClasses(graph, facCount, coverageThreshold);
         HashMap<Graph, Node> currentBestNodes = new HashMap<>();
+//        List<Node> initialNodes = new ArrayList<>();
 
         for(Graph communitySubgraph: communitySubgraphs){
             boolean nodeSelected = false;
             List<Node> communityNodes = new ArrayList<>();
+//            List<Node> communityFacNodes = new ArrayList<>();
             for(Node n: communitySubgraph.getNodes()){
                 communityNodes.add(n);
-                if(n.getLabel().contains(Utility.FACILITY_NAME) && !nodeSelected){
-                    currentBestNodes.put(communitySubgraph, n);
-                    nodeSelected = true;
+                if(n.getLabel().contains(Utility.FACILITY_NAME)){
+//                    communityFacNodes.add(n);
+                    if(!nodeSelected) {
+//                        initialNodes.add(n);
+                        currentBestNodes.put(communitySubgraph, n);
+                        nodeSelected = true;
+                    }
                 }
             }
             nodeLists.add(communityNodes);
+//            nodeLists.add(communityFacNodes);
         }
+//        nodeLists.add(initialNodes);
 
         HashMap<Node, HashMap<Node, Double>> distancesToFacs = new HashMap<>();
 
@@ -53,7 +61,6 @@ public class ClusterSingleSwap {
                         if(tempCost < bestCost) {
                             bestCost = tempCost;
                             currentBestNodes.replace(communitySubgraph, n);
-                            System.out.printf("%f\n", bestCost);
                         }else {
                             distancesToFacs.remove(n);
                             distancesToFacs.put(currentBestNodes.get(communitySubgraph), tempHashMap);

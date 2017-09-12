@@ -2,6 +2,7 @@ package main;
 
 
 
+import com.mysql.jdbc.Buffer;
 import org.gephi.datalab.api.AttributeColumnsController;
 import org.gephi.graph.api.*;
 import org.gephi.io.importer.api.Container;
@@ -14,6 +15,7 @@ import org.openide.util.Lookup;
 
 import java.io.*;
 import java.math.RoundingMode;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 
 /**
@@ -115,6 +117,82 @@ public class Input {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void convertGMLFile(String fileName){
+
+
+        try {
+            File inFile = new File(getClass().getResource(fileName).toURI());
+
+            try(BufferedReader bufferedReader = new BufferedReader(new FileReader(inFile))) {
+
+                try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("FIXED_" + fileName))) {
+
+                    String line, nodeLine, edgeLine;
+
+                    while ((line = bufferedReader.readLine()) != null) {
+                        if (line.contains("node")) {
+                            bufferedWriter.write(line);
+                            bufferedWriter.write(System.getProperty("line.separator"));
+
+                            boolean firstLabelWritten = false;
+
+                            while (!(nodeLine = bufferedReader.readLine()).contains("]")) {
+                                if (nodeLine.contains("label")) {
+                                    String label = nodeLine.split("\"")[1];
+                                    String content;
+                                    if(label.contains("Zone_label")){
+                                        content = label.split("  ")[1];
+                                    } else {
+                                        content = label.substring(label.indexOf(' ') + 1);
+                                    }
+                                    if (!firstLabelWritten) {
+                                        String indent = nodeLine.split("label")[0];
+                                        bufferedWriter.write(indent+"label \"");
+                                        firstLabelWritten = true;
+                                    }
+                                    bufferedWriter.write(content);
+                                    if (!label.contains("SHAPE_Area")) {
+                                        bufferedWriter.write(";");
+                                    }
+                                } else {
+                                    bufferedWriter.write(nodeLine);
+                                    bufferedWriter.write(System.getProperty("line.separator"));
+                                }
+                            }
+                            bufferedWriter.write("\""+System.getProperty("line.separator") + nodeLine);
+                            bufferedWriter.write(System.getProperty("line.separator"));
+
+                        } else if (line.contains("edge")) {
+                            bufferedWriter.write(line);
+                            bufferedWriter.write(System.getProperty("line.separator"));
+
+                            while (!(edgeLine = bufferedReader.readLine()).contains("]")) {
+                                if (edgeLine.contains("label")) {
+                                    String weightValue = edgeLine.split("\"")[1];
+                                    String indent = edgeLine.split("label")[0];
+                                    bufferedWriter.write(indent+"weight " + weightValue);
+                                } else {
+                                    bufferedWriter.write(edgeLine);
+                                }
+                                bufferedWriter.write(System.getProperty("line.separator"));
+                            }
+                            bufferedWriter.write(edgeLine);
+                            bufferedWriter.write(System.getProperty("line.separator"));
+
+                        } else {
+                            bufferedWriter.write(line);
+                            bufferedWriter.write(System.getProperty("line.separator"));
+                        }
+                    }
+                }
+            }
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

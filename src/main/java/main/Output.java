@@ -29,7 +29,7 @@ public class Output {
         df.setRoundingMode(RoundingMode.DOWN);
 
         try {
-            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Timestamp(System.currentTimeMillis()));
+            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Timestamp(System.nanoTime()));
             writer = new FileWriter(tag+"_"+timeStamp+".csv");
 
             for (Node n:nodeList) {

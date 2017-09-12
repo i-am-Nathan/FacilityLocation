@@ -43,15 +43,12 @@ public class ClusterSelect {
 
                     if(tempCost < bestCost ){
                         bestCost = tempCost;
-                        System.out.printf("New Best cost: %f\n", bestCost);
                         currentBestNode = n;
                     }
                 }
             }
             bestNodes.add(currentBestNode);
             nodeLists.add(communityNodes);
-
-            System.out.println("#######");
         }
 
         nodeLists.add(bestNodes);
