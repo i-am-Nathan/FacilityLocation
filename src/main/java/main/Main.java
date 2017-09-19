@@ -13,51 +13,71 @@ public class Main {
 	public static UndirectedGraph _importedGraph;
 	public static List<Node> _facNodes;
 	public static List<Node> _resNodes;
-
+	public boolean useEuclidean = false;
+	public int facCount = 3;
+	public int coverageThreshold = 75;
 
 	public static void main(String[] args){
-//	    Input i = new Input();
-//
-//	    i.convertGMLFile("GML_ZONE.gml");
 
-		boolean useEuclidean = false;
-		int facCount = 15;
+		Input i = new Input();
+		Graph graph = i.importGraph("FIXED_GML_ZONE.gml");
 
-//		for(int j = 0; j < 2; j++) {
-//			if(useEuclidean)System.out.println("CLUSTER SWAP FOR EUCLIDEAN");
-//			else System.out.println("CLUSTER SWAP FOR NETWORK");
-//
-//			for (facCount = 1; facCount <= 11; facCount += 2) {
-//				System.out.println("\n\n#####################\n"+facCount+" FACILITY NODE(S)");
-//				for (int index = 1; index <= 5; index++) {
-//					System.out.println("ITERATION " + index);
+		ClusterSingleSwap css = new ClusterSingleSwap();
+		ClusterSelect cSelect = new ClusterSelect();
+		SingleSwap ss = new SingleSwap();
+		ReverseGreedy rGreedy = new ReverseGreedy();
 
-					Input i = new Input();
-					Graph graph = i.importGraph("FIXED_GML_ZONE.gml");
-					ClusterSingleSwap css = new ClusterSingleSwap();
+		// Peforming Single Swap with Community Detection===========================================
+		long startTime = System.currentTimeMillis();
+		List<List<Node>> csr = css.Search(graph, facCount, coverageThreshold, useEuclidean);
+		long endTime = System.currentTimeMillis();
 
-					long startTime = System.currentTimeMillis();
-					List<List<Node>> csr = css.Search(graph, facCount, 75, useEuclidean);
+		long totalTime = endTime - startTime;
+		long minutes = (totalTime / 1000) / 60;
+		long seconds = (totalTime / 1000) % 60;
 
-					long endTime = System.currentTimeMillis();
-					long totalTime = endTime - startTime;
-					long minutes = (totalTime / 1000) / 60;
-					long seconds = (totalTime / 1000) % 60;
+		List<Node> result = csr.get(csr.size()-1);
 
-					List<Node> result = csr.get(csr.size()-1);
+		System.out.println("Time taken for Single Swap with Community Detection and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
+		System.out.printf("Resulting Score Single Swap with Community Detection: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
 
-					System.out.println("Time taken for cluster swap and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
-					System.out.printf("THE RESULTING SCORE FOR CLUSTER SWAP IS: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
-//				}
-//			}
-//			useEuclidean = true;
-//		}
-//
-//		Output o = new Output();
-//		for(List<Node> nl : result){
-//			o.export(nl, "Countdown");
-//		}
+		//Performing Cluster Select================================================================
+		startTime = System.currentTimeMillis();
+		List<List<Node>> cSelectr = cSelect.Search(graph, facCount, coverageThreshold, useEuclidean);
+		endTime = System.currentTimeMillis();
 
+		totalTime = endTime - startTime;
+		minutes = (totalTime / 1000) / 60;
+		seconds = (totalTime / 1000) % 60;
+
+		result = cSelectr.get(cSelectr.size()-1);
+
+		System.out.println("Time taken for Cluster Select and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
+		System.out.printf("Resulting Score for Cluster Select: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
+
+		//Performing Local Search with Single Swap=================================================
+		startTime = System.currentTimeMillis();
+		result = ss.Search(graph, facCount, useEuclidean, false);
+		endTime = System.currentTimeMillis();
+
+		totalTime = endTime - startTime;
+		minutes = (totalTime / 1000) / 60;
+		seconds = (totalTime / 1000) % 60;
+
+		System.out.println("Time taken for Local Search with Single Swap and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
+		System.out.printf("Result Score for Local Search with Single Swap: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
+
+		//Performing Reverse Greedy===============================================================
+		startTime = System.currentTimeMillis();
+		result = rGreedy.Search(graph, facCount, useEuclidean);
+		endTime = System.currentTimeMillis();
+
+		totalTime = endTime - startTime;
+		minutes = (totalTime / 1000) / 60;
+		seconds = (totalTime / 1000) % 60;
+
+		System.out.println("Time taken for Reverse Greedy and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
+		System.out.printf("Resulting Score for Reverse Greedy: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
 
 	}
 }

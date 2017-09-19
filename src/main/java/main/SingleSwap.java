@@ -88,11 +88,8 @@ public class SingleSwap {
 					swapNodes.remove(bestScoreSet.swapOutNode);
 					swapNodes.add(bestScoreSet.swapInNode);
 					resNodes = bestScoreSet.resultingSet;
-//					System.out.printf("Best Score: %f\n",bestScore);
-//					System.out.println("\n####");
 				}
 			}
-//			System.out.println("\n### The best score for this round is: "+bestScore+"\n");
 		}
 
 		List<Node> selectedNodes = new ArrayList<>(swapNodes);
@@ -131,4 +128,3 @@ public class SingleSwap {
 		return score;
 	}
 }
-

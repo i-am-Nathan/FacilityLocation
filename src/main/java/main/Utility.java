@@ -26,11 +26,11 @@ import java.util.ArrayList;
  * Utility class for calling common methods
  */
 public class Utility {
-	
+
 	public static String FACILITY_NAME = "Business";
 	public static String RESIDENTIAL_NAME = "Residential";
 	public static String XY_FILE = "src\\main\\java\\main\\YX.csv";
-	
+
 	//Euclid distance between 2 nodes
 	public static double euclidDistance(Node facNode, Node resNode) {
 		double distance = Math.sqrt(Math.pow(facNode.x()- resNode.x(), 2) + Math.pow(facNode.y() - resNode.y(), 2));
@@ -106,19 +106,15 @@ public class Utility {
 				func2 = appearanceModel.getNodeFunction(graph, classColumn,
 						PartitionElementColorTransformer.class);
 				partition2 = ((PartitionFunction) func2).getPartition();
-//				System.out.println(partition2.size());
 
 			}
 
-//			System.out.println(partition2.size() + " communities found");
 			percentages = partition2.getSortedValues().toArray();
 
 			for (int classIndex = 0; classIndex < k; classIndex++) {
-//				System.out.println("Community " + classIndex + ": " + partition2.percentage(percentages[classIndex]));
 				totalCoverage += partition2.percentage(percentages[classIndex]);
 			}
 			resolution++;
-//			System.out.println("Total coverage over " + k + " communities: " + totalCoverage + "%\n");
 		}
 
 		PartitionBuilder.PartitionFilter partitionFilter = new PartitionBuilder.NodePartitionFilter(classColumn,
@@ -155,9 +151,6 @@ public class Utility {
 			double maxCentrality = 0;
 			org.gephi.graph.api.Node maxCentralityNode = null;
 
-//			System.out.println("Nodes in community " + classIndex + ": " + communityGraph.getNodeCount());
-//			System.out.println("Edges in community " + classIndex + ": " + communityGraph.getEdgeCount());
-
 			Column centralityColumn = null;
 
 			for (org.gephi.graph.api.Node node : sg.getNodes()) {
@@ -186,7 +179,7 @@ public class Utility {
 
 		return nodeLists;
 	}
-	
+
 	//Uses dijkstra algorithm and finds the distance of the whole graph relative to the node
 	public static HashMap<Node, Double> createNetworkSet(Graph graph, Node node){
 		DijkstraShortestPathAlgorithm dspa = new DijkstraShortestPathAlgorithm(graph, node);

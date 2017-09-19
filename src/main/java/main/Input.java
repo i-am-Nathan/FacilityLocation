@@ -49,7 +49,7 @@ public class Input {
 
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
         UndirectedGraph graph = graphModel.getUndirectedGraph();
-        
+
 		AttributeColumnsController attributeColumnsController = Lookup.getDefault().lookup(AttributeColumnsController.class);
 		Table edgeTable = graph.getModel().getEdgeTable();
 		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
@@ -57,20 +57,6 @@ public class Input {
 
         return graph;
     }
-
-//    public UndirectedGraph getZoneGraph(UndirectedGraph completeGraph, String zoneType){
-//        Column col = completeGraph.getModel().getNodeTable().getColumn("Label");
-//        FilterController filterController = Lookup.getDefault().lookup(FilterController.class);
-//
-//        AttributeEqualBuilder.EqualStringFilter equalStringFilter = new AttributeEqualBuilder.EqualStringFilter.Node(col);
-//        equalStringFilter.init(completeGraph);
-//        equalStringFilter.setUseRegex(true);
-//        equalStringFilter.setPattern("^.*(" + zoneType + ").*$");
-//        Query query = filterController.createQuery(equalStringFilter);
-//        GraphView graphView = filterController.filter(query);
-//
-//        return completeGraph.getModel().getUndirectedGraph(graphView);
-//    }
 
     //Sets the x and y coordinates for the graph
     public void setXY(UndirectedGraph graph){

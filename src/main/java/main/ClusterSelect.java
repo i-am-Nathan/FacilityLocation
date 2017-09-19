@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+* Implementation of Cluster Select algorithm
+*/
 public class ClusterSelect {
 
     public List<List<Node>> Search(Graph graph, int facCount, float coverageThreshold, boolean useEuclidean){
@@ -16,6 +19,7 @@ public class ClusterSelect {
 
         List<Node> bestNodes = new ArrayList<>();
 
+        //Loop through all the communities to find the best facility location in each of them
         for(Subgraph communitySubgraph: communitySubgraphs){
             List<Node> communityNodes = new ArrayList<>();
             double bestCost = Double.MAX_VALUE;
