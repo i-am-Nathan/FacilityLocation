@@ -60,7 +60,7 @@ public class Utility {
 		return sortedHashMap;
 
 	}
-
+	//Clusters the graph into K clusters using Gephi's Modularity Algorithm
 	static List<Subgraph> findModularityClasses(Graph graph, int k, float coverageThreshold){
 		List<Subgraph> communitySubgraphs = new ArrayList<>();
 
@@ -85,6 +85,7 @@ public class Utility {
 		Column classColumn = null;
 		Object[] percentages = null;
 
+		//Makes sure that the clusters cover above the coverage threshold of the graph
 		while (totalCoverage < coverageThreshold) {
 			totalCoverage = 0;
 			modularity.setResolution(resolution);
@@ -195,12 +196,13 @@ public class Utility {
 		return euclideanSet;
 	}
 
+	//creates a distance hashmap <residential node, distance from resNode to facNode>
 	public static HashMap<Node, Double> createDistanceMap(Graph graph, Node node, boolean useEuclidean){
 		if(useEuclidean) return createEuclideanSet(graph, node);
 		else return createNetworkSet(graph, node);
 
 	}
-
+	//Copies a hashmap and creates a new one
 	public static HashMap<Node, HashMap<Node, Double>> copyHashMap(
 			HashMap<Node, HashMap<Node, Double>> closestFacToResNodes) {
 		HashMap<Node, HashMap<Node, Double>> tempFacToRes = new HashMap<Node, HashMap<Node, Double>>();
@@ -217,6 +219,7 @@ public class Utility {
 		return tempFacToRes;
 	}
 
+	//Calculate the populations within a given zone and area.
 	public static double calculatePopulationScore(String zone, float area){
 		int density;
 		switch (zone) {
@@ -264,7 +267,8 @@ public class Utility {
 		}
 		return (area/density);
 	}
-
+	
+	//calculate the final score of the chosen opened facilities.
 	public static double calculateFinalScore(Graph wholeGraph, List<Node> nodeList, boolean useEuclidean){
 		double score = 0;
 		HashMap<Node, HashMap<Node, Double>> distancesToResNodes = new HashMap<>();
