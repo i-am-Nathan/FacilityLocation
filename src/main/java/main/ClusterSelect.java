@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
-* Implementation of Cluster Select algorithm
+* Implementation of Cluster Select algorithm, the algorithm works by first clustering the network into K communities.
+* It than finds the facility location that has the minimum cost for opening within its community ignoring the rest of the opened facilities.
 */
 public class ClusterSelect {
 
@@ -24,7 +25,8 @@ public class ClusterSelect {
             List<Node> communityNodes = new ArrayList<>();
             double bestCost = Double.MAX_VALUE;
             Node currentBestNode = null;
-
+            
+            //Within each community find the facility that produces the lowest cost within its community
             for(Node n: communitySubgraph.getNodes()){
                 communityNodes.add(n);
                 if(n.getLabel().contains(Utility.FACILITY_NAME)){
@@ -44,7 +46,8 @@ public class ClusterSelect {
                             }
                         }
                     }
-
+                    
+                    //If the current chosen facility produces a lower cost than replace the currently best one
                     if(tempCost < bestCost ){
                         bestCost = tempCost;
                         currentBestNode = n;
