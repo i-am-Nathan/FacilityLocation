@@ -9,6 +9,10 @@ import java.util.List;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 
+/**
+* This algorithm works by first opening all facilities in the network than closing the facility which reduces the cost the most
+* one by one until we only have K facilities left.
+*/
 public class ReverseGreedy {
 	@SuppressWarnings("unchecked")
 	public static List<Node> Search(int facCount, Graph wholeGraph, boolean useEuclidean) {
@@ -71,27 +75,18 @@ public class ReverseGreedy {
 					removeNode = facNode;
 				}
 			}
-
+			//Update the new network distances.
 			closestFacToResNodes.clear();
 			for (Node node : currentBestSet.keySet()) {
 				closestFacToResNodes.put(node, currentBestSet.get(node));
 			}
 			facNodes.remove(removeNode);
-			long timeBeforeScore = System.currentTimeMillis();
-			System.out.printf("THE SCORE IS: %f\n", Utility.calculateFinalScore(wholeGraph, new ArrayList<>(facNodes.keySet()), useEuclidean));
-			long timeAfterScore = System.currentTimeMillis();
-			long totalTime = (timeAfterScore - startTime) - (timeAfterScore - timeBeforeScore);
-			long minutes = (totalTime / 1000) / 60;
-			long seconds = (totalTime / 1000) % 60;
-			System.out.println("Time taken for Reverse Greedy and " + facNodes.size() + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")\n################\n\n");
-
 		}
 		List<Node> result = new ArrayList<Node>(facNodes.keySet());
-		
 
 		return result;
 	}
-
+	//compute the euclid distance between all facility nodes and resNodes.
 	private static HashMap<Node, HashMap<Node, Double>> computeEuclidDistance(List<Node> resNodes,
 			HashMap<Node, Double> facNodes) {
 		HashMap<Node, HashMap<Node,Double>> connectedFacToRes = new HashMap<Node,HashMap<Node,Double>>();
@@ -105,10 +100,10 @@ public class ReverseGreedy {
 		return connectedFacToRes;
 	}
 
+	//Compute distance between all facilities and residential nodes using dijkstra's algorithm
 	private static HashMap<Node, HashMap<Node, Double>> computeDijkstraDistances(Graph wholeGraph,
 			List<Node> resNodes) {
 		HashMap<Node,HashMap<Node,Double>> closestFacToResNodes = new HashMap<Node,HashMap<Node,Double>>();
-
 	
 		for (Node node : resNodes) {
 			//Using Dijkstra algorithm get the distances to all nodes relative the input node
@@ -137,6 +132,7 @@ public class ReverseGreedy {
 		return closestFacToResNodes;
 	}
 
+	//Calculate the cost of the current set of opened facility nodes
 	private static double CalculateWeight(HashMap<Node, HashMap<Node, Double>> closestFacToResNodes,
 			Double lowestWeight) {
 
