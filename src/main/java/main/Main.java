@@ -9,6 +9,10 @@ import org.gephi.graph.api.Node;
 import org.gephi.graph.api.UndirectedGraph;
 import org.openide.util.datatransfer.ExTransferable;
 
+/**
+* The main class is used to call all the created algorithms and setting the parameters
+* It will display the results of each of the algorithms and the time
+*/
 public class Main {
 	public static UndirectedGraph _importedGraph;
 	public static List<Node> _facNodes;
@@ -20,7 +24,7 @@ public class Main {
 	public static void main(String[] args){
 
 		Input i = new Input();
-		Graph graph = i.importGraph("FIXED_GML_ZONE.gml");
+		Graph graph = i.importGraph("300.gml");
 
 		ClusterSingleSwap css = new ClusterSingleSwap();
 		ClusterSelect cSelect = new ClusterSelect();
@@ -67,7 +71,7 @@ public class Main {
 		System.out.println("Time taken for Local Search with Single Swap and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
 		System.out.printf("Result Score for Local Search with Single Swap: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
 
-		//Performing Reverse Greedy===============================================================
+		//Performing Reverse Greedy===================================Note this algorithm can take approximately 30min
 		startTime = System.currentTimeMillis();
 		result = rGreedy.Search(graph, facCount, useEuclidean);
 		endTime = System.currentTimeMillis();
