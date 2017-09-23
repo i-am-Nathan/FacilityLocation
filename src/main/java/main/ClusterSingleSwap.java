@@ -8,13 +8,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+* Cluster Single Swap works by clustering  the network into k communities. Within the communities select a facility each.
+* Swap a facility within its own community which reduces the cost the most for the set of chosen facility nodes. Repeat this for
+* all communities until there are no longer a swap that reduces the total cost.
+*/
 public class ClusterSingleSwap {
     public List<List<Node>> Search(Graph graph, int facCount, float coverageThreshold, boolean useEuclidean){
 
         List<List<Node>> nodeLists = new ArrayList<>();
+        //Cluster the network into K communities
         List<Subgraph> communitySubgraphs = Utility.findModularityClasses(graph, facCount, coverageThreshold);
         HashMap<Graph, Node> currentBestNodes = new HashMap<>();
-
+        
+        //For each community select a random facility node to open
         for(Graph communitySubgraph: communitySubgraphs){
             boolean nodeSelected = false;
             List<Node> communityNodes = new ArrayList<>();
@@ -29,9 +36,9 @@ public class ClusterSingleSwap {
             }
             nodeLists.add(communityNodes);
         }
-
+        
+        //Find the distances between the residential nodes to all opened facility nodes
         HashMap<Node, HashMap<Node, Double>> distancesToFacs = new HashMap<>();
-
         for(Node currentBestNode: currentBestNodes.values()){
             HashMap<Node, Double> distances = Utility.createDistanceMap(graph, currentBestNode, useEuclidean);
             distancesToFacs.put(currentBestNode, distances);
@@ -42,9 +49,10 @@ public class ClusterSingleSwap {
         double bestCost = calculateCost(bestDistances, Double.MAX_VALUE);
 
         double oldCost = 0;
-
+        //While there is still swaps that reduces the total cost keep looping
         while(oldCost != bestCost){
             oldCost = bestCost;
+            //Go through all communities and perform swaps within its communities
             for (Graph communitySubgraph: communitySubgraphs){
                 for(Node n: communitySubgraph.getNodes()){
                     if(n.getLabel().contains(Utility.FACILITY_NAME) && !currentBestNodes.get(communitySubgraph).equals(n)){
@@ -71,7 +79,7 @@ public class ClusterSingleSwap {
         return nodeLists;
 
     }
-
+    //Create a map which contains a residential node and the distance from itself to its closest facility node
     public HashMap<Node, Double> createBestDistancesMap(Graph graph, HashMap<Node, HashMap<Node, Double>> distancesToFacs){
 
         HashMap<Node, Double> bestDistances = new HashMap<>();
@@ -92,7 +100,7 @@ public class ClusterSingleSwap {
 
         return bestDistances;
     }
-
+    //calculate the cost of the current set of opened facilities
     public double calculateCost(HashMap<Node, Double> bestDistances, double currentBestCost){
         double cost = 0;
         for (Node n: bestDistances.keySet()){
