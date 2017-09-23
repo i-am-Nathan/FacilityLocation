@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
- * Created by Juno on 1/08/2017.
+ * The output class converts the chosen nodes from the algorithms to a file for QGIS to view its location
  */
 public class Output {
 
@@ -32,6 +32,7 @@ public class Output {
             String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Timestamp(System.nanoTime()));
             writer = new FileWriter(tag+"_"+timeStamp+".csv");
 
+	//Loops through all the nodes to find the nodes that have been provided from the input
             for (Node n:nodeList) {
                 String[] nodeData = n.getLabel().split( ";");
                 br = new BufferedReader(new FileReader(Utility.XY_FILE));
