@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 
 /**
- * Created by Juno on 4/07/2017.
+ * This class is used for processing the network file data so that it can be used in our algorithms
  */
 public class Input {
     private Workspace workspace;
@@ -30,11 +30,12 @@ public class Input {
         workspace = pc.getCurrentWorkspace();
     }
 
-    //Imports a graph from the supplied file name
+    //Imports a graph from the supplied file name and returns a undirected graph
     public UndirectedGraph importGraph(String fileName){
         ImportController importController = Lookup.getDefault().lookup(ImportController.class);
         Container container;
-
+	
+	//Grabbing the file from the current directory, it returns null if the file does not exist
         try{
             File file = new File(getClass().getResource(fileName).toURI());
             container = importController.importFile(file);
@@ -46,14 +47,14 @@ public class Input {
         }
 
         importController.process(container,new DefaultProcessor(), workspace);
-
+	//Use Gephi's graph model to get the undirected graph created by the provided file
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
         UndirectedGraph graph = graphModel.getUndirectedGraph();
 
-		AttributeColumnsController attributeColumnsController = Lookup.getDefault().lookup(AttributeColumnsController.class);
-		Table edgeTable = graph.getModel().getEdgeTable();
-		attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
-
+	//Adds a weight column to the nodes from the provided data so that we can calculate a nodes distance more accurately
+	AttributeColumnsController attributeColumnsController = Lookup.getDefault().lookup(AttributeColumnsController.class);
+	Table edgeTable = graph.getModel().getEdgeTable();
+	attributeColumnsController.copyColumnDataToOtherColumn(edgeTable, edgeTable.getColumn("Label"), edgeTable.getColumn("Weight"));
 
         return graph;
     }
@@ -106,8 +107,8 @@ public class Input {
         }
     }
 
+//Converts a file into a GML file
     public void convertGMLFile(String fileName){
-
 
         try {
             File inFile = new File(getClass().getResource(fileName).toURI());
