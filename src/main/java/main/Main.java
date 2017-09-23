@@ -25,6 +25,7 @@ public class Main {
 
 		Input i = new Input();
 		Graph graph = i.importGraph("300.gml");
+		Output output = new Output();
 
 		ClusterSingleSwap css = new ClusterSingleSwap();
 		ClusterSelect cSelect = new ClusterSelect();
@@ -44,7 +45,9 @@ public class Main {
 
 		System.out.println("Time taken for Single Swap with Community Detection and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
 		System.out.printf("Resulting Score Single Swap with Community Detection: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
-
+		
+		output.export(result,"SSCM");
+		
 		//Performing Cluster Select================================================================
 		startTime = System.currentTimeMillis();
 		List<List<Node>> cSelectr = cSelect.Search(graph, facCount, coverageThreshold, useEuclidean);
@@ -59,6 +62,7 @@ public class Main {
 		System.out.println("Time taken for Cluster Select and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
 		System.out.printf("Resulting Score for Cluster Select: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
 
+		output.export(result,"CSelect");
 		//Performing Local Search with Single Swap=================================================
 		startTime = System.currentTimeMillis();
 		result = ss.Search(graph, facCount, useEuclidean, false);
@@ -70,7 +74,8 @@ public class Main {
 
 		System.out.println("Time taken for Local Search with Single Swap and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
 		System.out.printf("Result Score for Local Search with Single Swap: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
-
+		
+		output.export(result,"LOCALSEARCH");
 		//Performing Reverse Greedy===================================Note this algorithm can take approximately 30min
 		startTime = System.currentTimeMillis();
 		result = rGreedy.Search(graph, facCount, useEuclidean);
@@ -82,6 +87,7 @@ public class Main {
 
 		System.out.println("Time taken for Reverse Greedy and " + facCount + " facilities: " + totalTime + " (" + minutes + ":" + seconds + ")");
 		System.out.printf("Resulting Score for Reverse Greedy: %f\n", Utility.calculateFinalScore(graph, result, useEuclidean));
-
+		
+		output.export(result,"RGreedy");
 	}
 }
